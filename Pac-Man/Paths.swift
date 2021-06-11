@@ -71,20 +71,20 @@ struct Paths {
         return false
     }
     
-    func checkOnLine(vertical: Bool, path: Path, to: CGPoint) -> (valid: Bool, undoOffset: CGFloat) {
+    func checkOnLine(vertical: Bool, path: Path, to: CGPoint) -> (valid: Bool, reachPos: CGFloat) {
         if vertical && inRange(to.y, path.startPoint.y) {
             if to.x >= path.startPoint.x && to.x <= path.endPoint.x  {
-                return (valid: true, undoOffset: path.startPoint.y)
+                return (valid: true, reachPos: path.startPoint.y)
             }
         } else if !vertical && inRange(to.x, path.startPoint.x) {
             if to.y >= path.startPoint.y && to.y <= path.endPoint.y  {
-                return (valid: true, undoOffset: path.startPoint.x)
+                return (valid: true, reachPos: path.startPoint.x)
             }
         }
-        return (valid: false, undoOffset: -1)
+        return (valid: false, reachPos: -1)
     }
     
-    func checkMove(from: CGPoint, to: CGPoint) -> (valid: Bool, undoOffset: CGFloat) {
+    func checkMove(from: CGPoint, to: CGPoint) -> (valid: Bool, reachPos: CGFloat) {
         let vertical: Bool
         if from.x == to.x {
             vertical = false
@@ -92,24 +92,24 @@ struct Paths {
             vertical = true
         } else {
             print("Error: No straight move")
-            return (valid: false, undoOffset: -1)
+            return (valid: false, reachPos: -1)
         }
         
         for path in paths {
             if path.alignmentVertical && vertical {
                 let chechOnLineResult = checkOnLine(vertical: vertical, path: path, to: to)
                 if chechOnLineResult.valid {
-                    return (valid: true, undoOffset: chechOnLineResult.undoOffset)
+                    return (valid: true, reachPos: chechOnLineResult.reachPos)
                 }
             }
             
             if !path.alignmentVertical && !vertical {
                 let chechOnLineResult = checkOnLine(vertical: vertical, path: path, to: to)
                 if chechOnLineResult.valid {
-                    return (valid: true, undoOffset: chechOnLineResult.undoOffset)
+                    return (valid: true, reachPos: chechOnLineResult.reachPos)
                 }
             }
         }
-        return (valid: false, undoOffset: -1)
+        return (valid: false, reachPos: -1)
     }
 }
