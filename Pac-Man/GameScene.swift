@@ -18,7 +18,7 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        figure!.move()
+        figure!.move(figure!.direction)
     }
     
     private func addGesturRecognizer() {

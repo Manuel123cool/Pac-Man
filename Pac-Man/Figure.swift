@@ -10,16 +10,17 @@ enum Direction: CGFloat {
 
 struct Figure {
     let gameScene: SKScene
-    
-    var pos: CGPoint = CGPoint(x: 100, y: 100)
+    let paths: Paths
+    var pos: CGPoint
     var direction: Direction = .left
-    var crocodileOpeningValue = 0
+    var oneAfterDirChange: (Bool, undoOffset: CGFloat) = (false, undoOffset: -1)
     
     var firstArc: SKShapeNode = SKShapeNode()
     var secondArc: SKShapeNode = SKShapeNode()
     init(gameScene: SKScene) {
         self.gameScene = gameScene
-        
+        self.paths = Paths(gameScene: self.gameScene)
+        self.pos = paths.startPostion
         setupArcs(direction)
     }
     
@@ -48,7 +49,7 @@ struct Figure {
         let sequence = SKAction.sequence([rotationAction, rotationAction1])
         let repeatAction = SKAction.repeatForever(sequence)
         firstArc.run(repeatAction)
-        
+        firstArc.zPosition = 1
         gameScene.addChild(firstArc)
         
         let path1 = CGMutablePath()
@@ -68,32 +69,84 @@ struct Figure {
         let repeatAction1 = SKAction.repeatForever(sequence1)
 
         secondArc.run(repeatAction1)
+        secondArc.zPosition = 1
         gameScene.addChild(secondArc)
     }
     
     mutating func changeDir(_ direction: Direction) {
-        self.direction = direction
-        setupArcs(direction)
+        if move(direction, noMove: true) {
+            self.direction = direction
+            setupArcs(direction)
+        }
     }
     
-    mutating func move() {
+    @discardableResult mutating func move(_ direction: Direction, noMove: Bool = false) -> Bool {
         let changeValue: CGFloat = 0.5
+        
+        if oneAfterDirChange.0 {
+            switch direction {
+                case .up:
+                    firstArc.position.x = oneAfterDirChange.undoOffset
+                    secondArc.position.x = oneAfterDirChange.undoOffset
+                case .down:
+                    firstArc.position.x = oneAfterDirChange.undoOffset
+                    secondArc.position.x = oneAfterDirChange.undoOffset
+                case .right:
+                    firstArc.position.y = oneAfterDirChange.undoOffset
+                    secondArc.position.y = oneAfterDirChange.undoOffset
+                case .left:
+                    firstArc.position.y = oneAfterDirChange.undoOffset
+                    secondArc.position.y = oneAfterDirChange.undoOffset
+            }
+            oneAfterDirChange.0 = false
+        }
+        
         let  currentPos = firstArc.position
+        func checkMove(arc1Pos: CGPoint, arc2Pos: CGPoint) -> Bool {
+            let checkMoveResult = self.paths.checkMove(from: currentPos, to: arc1Pos)
+            if checkMoveResult.valid {
+                if (!noMove) {
+                    firstArc.position = arc1Pos
+                    secondArc.position = arc2Pos
+                    
+                    pos = firstArc.position
+                } else {
+                    oneAfterDirChange.undoOffset = checkMoveResult.undoOffset
+                    oneAfterDirChange.0 = true
+                }
+                return true
+            } else {
+                return false
+            }
+        }
         
         switch direction {
             case .up:
-                firstArc.position = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y + changeValue))
-                secondArc.position = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y + changeValue))
+                let arc1Pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y + changeValue))
+                let arc2Pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y + changeValue))
+                if checkMove(arc1Pos: arc1Pos, arc2Pos: arc2Pos) {
+                    return true
+                }
+                
             case .down:
-                firstArc.position = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y - changeValue))
-                secondArc.position = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y - changeValue))
+                let arc1Pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y - changeValue))
+                let arc2Pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y - changeValue))
+                if checkMove(arc1Pos: arc1Pos, arc2Pos: arc2Pos) {
+                    return true
+                }
             case .right:
-                firstArc.position = CGPoint(x: currentPos.x + changeValue, y: CGFloat(currentPos.y))
-                secondArc.position = CGPoint(x: currentPos.x + changeValue, y: CGFloat(currentPos.y))
+                let arc1Pos = CGPoint(x: currentPos.x + changeValue, y: CGFloat(currentPos.y))
+                let arc2Pos = CGPoint(x: currentPos.x + changeValue, y: CGFloat(currentPos.y))
+                if checkMove(arc1Pos: arc1Pos, arc2Pos: arc2Pos) {
+                    return true
+                }
             case .left:
-                firstArc.position = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
-                secondArc.position = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
+                let arc1Pos = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
+                let arc2Pos = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
+                if checkMove(arc1Pos: arc1Pos, arc2Pos: arc2Pos) {
+                    return true
+                }
         }
-        pos = firstArc.position
+        return false
     }
 }
