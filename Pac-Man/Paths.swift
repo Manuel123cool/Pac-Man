@@ -47,21 +47,51 @@ struct Path {
 struct Paths {
     let gameScene: SKScene
     var paths: [Path] = []
-    let startPostion = CGPoint(x: 150, y: 100)
+    var startPostion = CGPoint(x: -1, y: -1)
+    let changeValue: Double
     
-    init(gameScene: SKScene) {
+    init(gameScene: SKScene, changeValue: Double) {
         self.gameScene = gameScene
+        self.changeValue = changeValue
+        //let height = gameScene.size.height
+        let width = gameScene.size.width
         
-        addPath(startPoint: CGPoint(x: 100, y: 100), endPoint: CGPoint(x: 200, y: 100))
-        addPath(startPoint: CGPoint(x: 100, y: 0), endPoint: CGPoint(x: 100, y: 100))
-        addPath(startPoint: CGPoint(x: 100, y: 100), endPoint: CGPoint(x: 100, y: 200))
+        self.startPostion = CGPoint(x: roundToChangeValue(width / 2),
+            y: roundToChangeValue(percent(5)))
+        addPath(startPoint: CGPoint(x: percent(5), y: percent(5)),
+            endPoint: CGPoint(x: width - percent(5), y: percent(5)))
+        addPath(startPoint: CGPoint(x: percent(5), y: percent(5)),
+            endPoint: CGPoint(x: percent(5), y: percent(15)))
+    }
+    
+    func percent(_ percent: CGFloat) -> CGFloat {
+        return gameScene.size.width / 100 * percent
     }
     
     mutating func addPath(startPoint: CGPoint, endPoint: CGPoint) {
-        paths.append(.init(startPoint: startPoint, endPoint: endPoint, gameScene: gameScene))
-        
+        let start = CGPoint(x: roundToChangeValue(startPoint.x),
+            y: roundToChangeValue(startPoint.y))
+        let end = CGPoint(x: roundToChangeValue(endPoint.x),
+            y: roundToChangeValue(endPoint.y))
+        paths.append(.init(startPoint: start, endPoint: end, gameScene: gameScene))
     }
     
+    func roundToChangeValue(_ valuePar: CGFloat) -> CGFloat {
+        let value = Double(valuePar)
+        var startValue: Double = 0
+        while true {
+            if startValue < value {
+                startValue += changeValue
+            } else {
+                break
+            }
+        }
+        if (startValue - changeValue - value) * 1 > startValue - value {
+            return CGFloat(startValue - changeValue)
+        } else {
+            return CGFloat(startValue)
+        }
+    }
     func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
         let offsetValue: CGFloat = 10
         if firstValue >= secondValue - offsetValue &&
