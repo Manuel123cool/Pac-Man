@@ -96,12 +96,41 @@ struct Paths {
         addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(15)),
             endPoint: CGPoint(x: perWidth(60), y: perHeigth(15)))
         
-        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(75)),
-            endPoint: CGPoint(x: perWidth(5), y: perHeigth(75)))
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(75)),
+            endPoint: CGPoint(x: perWidth(60), y: perHeigth(75)))
         
-        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(75)),
-            endPoint: CGPoint(x: perWidth(5), y: perHeigth(75)))
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(25)),
+            endPoint: CGPoint(x: perWidth(60), y: perHeigth(25)))
         
+        addPath(startPoint: CGPoint(x: perWidth(30), y: perHeigth(25)),
+            endPoint: CGPoint(x: perWidth(30), y: perHeigth(75)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(45)),
+            endPoint: CGPoint(x: perWidth(30), y: perHeigth(45)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(55)),
+            endPoint: CGPoint(x: perWidth(30), y: perHeigth(55)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(45)),
+            endPoint: CGPoint(x: perWidth(95), y: perHeigth(45)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(55)),
+            endPoint: CGPoint(x: perWidth(95), y: perHeigth(55)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(55)),
+            endPoint: CGPoint(x: perWidth(95), y: perHeigth(55)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(55)),
+            endPoint: CGPoint(x: perWidth(70), y: perHeigth(65)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(35)),
+            endPoint: CGPoint(x: perWidth(70), y: perHeigth(45)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(30), y: perHeigth(65)),
+            endPoint: CGPoint(x: perWidth(70), y: perHeigth(65)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(30), y: perHeigth(35)),
+            endPoint: CGPoint(x: perWidth(70), y: perHeigth(35)))
     }
     
     func perWidth(_ percent: CGFloat) -> CGFloat {
