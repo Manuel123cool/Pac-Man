@@ -53,19 +53,63 @@ struct Paths {
     init(gameScene: SKScene, changeValue: Double) {
         self.gameScene = gameScene
         self.changeValue = changeValue
-        //let height = gameScene.size.height
-        let width = gameScene.size.width
         
-        self.startPostion = CGPoint(x: roundToChangeValue(width / 2),
-            y: roundToChangeValue(percent(5)))
-        addPath(startPoint: CGPoint(x: percent(5), y: percent(5)),
-            endPoint: CGPoint(x: width - percent(5), y: percent(5)))
-        addPath(startPoint: CGPoint(x: percent(5), y: percent(5)),
-            endPoint: CGPoint(x: percent(5), y: percent(15)))
+        self.startPostion = CGPoint(x: roundToChangeValue(perWidth(50)),
+            y: roundToChangeValue(perHeigth(5)))
+
+        addPath(startPoint: CGPoint(x: perWidth(95), y: perHeigth(5)),
+            endPoint: CGPoint(x: perWidth(95), y: perHeigth(95)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(5)),
+            endPoint: CGPoint(x: perWidth(5), y: perHeigth(45)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(55)),
+            endPoint: CGPoint(x: perWidth(5), y: perHeigth(95)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(5)),
+            endPoint: CGPoint(x: perWidth(40), y: perHeigth(5)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(5)),
+            endPoint: CGPoint(x: perWidth(95), y: perHeigth(5)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(95)),
+            endPoint: CGPoint(x: perWidth(40), y: perHeigth(95)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(95)),
+            endPoint: CGPoint(x: perWidth(95), y: perHeigth(95)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(5)),
+            endPoint: CGPoint(x: perWidth(40), y: perHeigth(15)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(5)),
+            endPoint: CGPoint(x: perWidth(60), y: perHeigth(25)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(85)),
+            endPoint: CGPoint(x: perWidth(40), y: perHeigth(95)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(75)),
+            endPoint: CGPoint(x: perWidth(60), y: perHeigth(95)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(85)),
+            endPoint: CGPoint(x: perWidth(60), y: perHeigth(85)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(15)),
+            endPoint: CGPoint(x: perWidth(60), y: perHeigth(15)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(75)),
+            endPoint: CGPoint(x: perWidth(5), y: perHeigth(75)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(75)),
+            endPoint: CGPoint(x: perWidth(5), y: perHeigth(75)))
+        
     }
     
-    func percent(_ percent: CGFloat) -> CGFloat {
+    func perWidth(_ percent: CGFloat) -> CGFloat {
         return gameScene.size.width / 100 * percent
+    }
+    
+    func perHeigth(_ percent: CGFloat) -> CGFloat {
+        return gameScene.size.height / 100 * percent
     }
     
     mutating func addPath(startPoint: CGPoint, endPoint: CGPoint) {
@@ -78,18 +122,18 @@ struct Paths {
     
     func roundToChangeValue(_ valuePar: CGFloat) -> CGFloat {
         let value = Double(valuePar)
-        var startValue: Double = 0
+        var roundValue: Double = 0
         while true {
-            if startValue < value {
-                startValue += changeValue
+            if roundValue < value {
+                roundValue += changeValue
             } else {
                 break
             }
         }
-        if (startValue - changeValue - value) * 1 > startValue - value {
-            return CGFloat(startValue - changeValue)
+        if (roundValue - changeValue - value) * 1 > roundValue - value {
+            return CGFloat(roundValue - changeValue)
         } else {
-            return CGFloat(startValue)
+            return CGFloat(roundValue)
         }
     }
     func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
