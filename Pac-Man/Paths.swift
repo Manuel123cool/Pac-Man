@@ -54,83 +54,16 @@ struct Paths {
         self.gameScene = gameScene
         self.changeValue = changeValue
         
-        self.startPostion = CGPoint(x: roundToChangeValue(perWidth(50)),
-            y: roundToChangeValue(perHeigth(5)))
+        self.startPostion = CGPoint(x: roundToChangeValue(perWidth(20)),
+            y: roundToChangeValue(perHeigth(7.5)))
+        
+        addPaths()
+        
+        deletPath(index: 17, vertical: true)
+        deletPath(index: 18, vertical: true)
+        deletPath(index: 22, vertical: false)
+        deletPath(index: 17, vertical: false)
 
-        addPath(startPoint: CGPoint(x: perWidth(95), y: perHeigth(5)),
-            endPoint: CGPoint(x: perWidth(95), y: perHeigth(95)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(5)),
-            endPoint: CGPoint(x: perWidth(5), y: perHeigth(45)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(55)),
-            endPoint: CGPoint(x: perWidth(5), y: perHeigth(95)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(5)),
-            endPoint: CGPoint(x: perWidth(40), y: perHeigth(5)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(5)),
-            endPoint: CGPoint(x: perWidth(95), y: perHeigth(5)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(95)),
-            endPoint: CGPoint(x: perWidth(40), y: perHeigth(95)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(95)),
-            endPoint: CGPoint(x: perWidth(95), y: perHeigth(95)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(5)),
-            endPoint: CGPoint(x: perWidth(40), y: perHeigth(15)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(5)),
-            endPoint: CGPoint(x: perWidth(60), y: perHeigth(25)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(85)),
-            endPoint: CGPoint(x: perWidth(40), y: perHeigth(95)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(60), y: perHeigth(75)),
-            endPoint: CGPoint(x: perWidth(60), y: perHeigth(95)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(85)),
-            endPoint: CGPoint(x: perWidth(60), y: perHeigth(85)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(40), y: perHeigth(15)),
-            endPoint: CGPoint(x: perWidth(60), y: perHeigth(15)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(75)),
-            endPoint: CGPoint(x: perWidth(60), y: perHeigth(75)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(25)),
-            endPoint: CGPoint(x: perWidth(60), y: perHeigth(25)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(30), y: perHeigth(25)),
-            endPoint: CGPoint(x: perWidth(30), y: perHeigth(75)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(45)),
-            endPoint: CGPoint(x: perWidth(30), y: perHeigth(45)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(5), y: perHeigth(55)),
-            endPoint: CGPoint(x: perWidth(30), y: perHeigth(55)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(45)),
-            endPoint: CGPoint(x: perWidth(95), y: perHeigth(45)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(55)),
-            endPoint: CGPoint(x: perWidth(95), y: perHeigth(55)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(55)),
-            endPoint: CGPoint(x: perWidth(95), y: perHeigth(55)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(55)),
-            endPoint: CGPoint(x: perWidth(70), y: perHeigth(65)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(70), y: perHeigth(35)),
-            endPoint: CGPoint(x: perWidth(70), y: perHeigth(45)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(30), y: perHeigth(65)),
-            endPoint: CGPoint(x: perWidth(70), y: perHeigth(65)))
-        
-        addPath(startPoint: CGPoint(x: perWidth(30), y: perHeigth(35)),
-            endPoint: CGPoint(x: perWidth(70), y: perHeigth(35)))
     }
     
     func perWidth(_ percent: CGFloat) -> CGFloat {
@@ -147,6 +80,35 @@ struct Paths {
         let end = CGPoint(x: roundToChangeValue(endPoint.x),
             y: roundToChangeValue(endPoint.y))
         paths.append(.init(startPoint: start, endPoint: end, gameScene: gameScene))
+      
+    }
+    
+    mutating func addPaths() {
+        for row in 0..<8 {
+            for column in 0..<5 {
+                addPath(startPoint: CGPoint(x: perWidth(CGFloat(column) * 21.25 + 7.5), y: perHeigth(CGFloat(row) * 10.625 + 7.5)),
+                            endPoint: CGPoint(x: perWidth(CGFloat(column) * 21.25 + 7.5), y: perHeigth(CGFloat(row + 1) * 10.625 + 7.5)))
+            }
+        }
+        
+        for row in 0..<9 {
+            for column in 0..<4 {
+                addPath(startPoint: CGPoint(x: perWidth(CGFloat(column) * 21.25 + 7.5), y: perHeigth(CGFloat(row) * 10.625 + 7.5)),
+                            endPoint: CGPoint(x: perWidth(CGFloat(column + 1) * 21.25 + 7.5), y: perHeigth(CGFloat(row) * 10.625 + 7.5)))
+            }
+        }
+    }
+    
+    mutating func deletPath(index: Int, vertical: Bool) {
+        if !vertical {
+            paths[index].line.removeFromParent()
+            paths.remove(at: index)
+            paths.insert(Path(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: 0, y: 0), gameScene: gameScene), at: index)
+        } else {
+            paths[index + 40].line.removeFromParent()
+            paths.remove(at: index + 40)
+            paths.insert(Path(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: 0, y: 0), gameScene: gameScene), at: index + 40)
+        }
     }
     
     func roundToChangeValue(_ valuePar: CGFloat) -> CGFloat {
