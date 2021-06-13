@@ -7,7 +7,6 @@ struct Path {
     let endPoint: CGPoint
     let alignmentVertical: Bool
     var line: SKShapeNode = SKShapeNode()
-    
     init(startPoint: CGPoint, endPoint: CGPoint, gameScene: SKScene) {
         self.gameScene = gameScene
         self.startPoint = startPoint
@@ -49,7 +48,7 @@ struct Paths {
     var paths: [Path] = []
     var startPostion = CGPoint(x: -1, y: -1)
     let changeValue: Double
-    
+
     init(gameScene: SKScene, changeValue: Double) {
         self.gameScene = gameScene
         self.changeValue = changeValue
@@ -127,6 +126,7 @@ struct Paths {
             return CGFloat(roundValue)
         }
     }
+    
     func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
         let offsetValue: CGFloat = 10
         if firstValue >= secondValue - offsetValue &&

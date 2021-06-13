@@ -16,6 +16,7 @@ struct Figure {
     var afterDirChange: (yes: Bool, reachPos: CGFloat, dir: Direction) =
         (yes: false, reachPos: -1, dir: .left)
     let changeValue: Double = 0.5
+    let pacManRadius: Double = 15
     
     var firstArc: SKShapeNode = SKShapeNode()
     var secondArc: SKShapeNode = SKShapeNode()
@@ -24,6 +25,9 @@ struct Figure {
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue)
         self.pos = paths.startPostion
         setupArcs(direction)
+        
+        let map = Map(gameScene: gameScene, pacManRadius: pacManRadius, paths: self.paths)
+        map.draw()
     }
     
     private mutating func setupArcs(_ direction: Direction) {
@@ -34,7 +38,7 @@ struct Figure {
         
         let path = CGMutablePath()
         path.addArc(center: CGPoint.zero,
-                    radius: 15,
+                    radius: CGFloat(pacManRadius),
                     startAngle: CGFloat(baseAngle * CGFloat.pi / 180),
                     endAngle: CGFloat(CGFloat(baseAngle + 180) * CGFloat.pi / 180),
                     clockwise: true
@@ -56,7 +60,7 @@ struct Figure {
         
         let path1 = CGMutablePath()
         path1.addArc(center: CGPoint.zero,
-                    radius: 15,
+                    radius: CGFloat(pacManRadius),
                     startAngle: CGFloat(CGFloat(baseAngle + 180) * CGFloat.pi / 180),
                     endAngle: CGFloat(baseAngle * CGFloat.pi / 180),
                     clockwise: true
