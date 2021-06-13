@@ -32,37 +32,34 @@ struct Map {
     }
     
     func drawRects() {
-        drawRect(0)
+        for index in 0..<(4 * 8) {
+            drawRect(index)
+        }
     }
     
     func drawRect(_ index: Int) {
         let pacManRadiusF = CGFloat(pacManRadius + 4)
         
-        let baseX: CGFloat
+        var baseX: CGFloat = -1
         var minusToX = index
         while true {
-            if minusToX < 5 {
-                baseX = CGFloat(minusToX) * perWidth(21.25) + perWidth(7.5)
+            if minusToX < 4 {
+                baseX = CGFloat(minusToX) * perWidth(21.25)
                 break
             } else {
-                minusToX -= 5
+                minusToX -= 4
             }
         }
         
-        let baseY: CGFloat
-        var row: Double = index / 5
-        while true {
-            if row % 10 == 0 {
-                baseY = CGFloat(row) * perHeigth(10.625)
-                break
-            }
-        }
+        
+        let row: Int = (index / 4)
+        let baseY: CGFloat = (CGFloat(row) * perHeigth(10.625))
         
         let path = CGMutablePath()
-        path.move(to: CGPoint(x: perWidth(7.5) + pacManRadiusF, y: perHeigth(7.5) + pacManRadiusF))
-        path.addLine(to: CGPoint(x: perWidth(7.5 + 21.25) - pacManRadiusF, y: perHeigth(7.5) + pacManRadiusF))
-        path.addLine(to: CGPoint(x: perWidth(7.5 + 21.25) - pacManRadiusF, y: perHeigth(7.5 + 10.625) - pacManRadiusF))
-        path.addLine(to: CGPoint(x: perWidth(7.5) + pacManRadiusF, y: perHeigth(7.5 + 10.625) - pacManRadiusF))
+        path.move(to: CGPoint(x: baseX + perWidth(7.5) + pacManRadiusF, y: baseY + perHeigth(7.5) + pacManRadiusF))
+        path.addLine(to: CGPoint(x: baseX + perWidth(7.5 + 21.25) - pacManRadiusF, y: baseY + perHeigth(7.5) + pacManRadiusF))
+        path.addLine(to: CGPoint(x: baseX + perWidth(7.5 + 21.25) - pacManRadiusF, y: baseY + perHeigth(7.5 + 10.625) - pacManRadiusF))
+        path.addLine(to: CGPoint(x: baseX + perWidth(7.5) + pacManRadiusF, y: baseY + perHeigth(7.5 + 10.625) - pacManRadiusF))
         path.closeSubpath()
 
         let line = SKShapeNode(path: path)
