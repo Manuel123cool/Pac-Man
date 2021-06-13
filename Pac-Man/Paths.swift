@@ -7,6 +7,8 @@ struct Path {
     let endPoint: CGPoint
     let alignmentVertical: Bool
     var line: SKShapeNode = SKShapeNode()
+    let drawYes = false
+    
     init(startPoint: CGPoint, endPoint: CGPoint, gameScene: SKScene) {
         self.gameScene = gameScene
         self.startPoint = startPoint
@@ -32,6 +34,9 @@ struct Path {
     }
     
     mutating func draw() {
+        guard drawYes else {
+            return
+        }
         let path = CGMutablePath()
         path.move(to: startPoint)
         path.addLine(to: endPoint)
