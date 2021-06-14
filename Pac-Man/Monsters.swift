@@ -6,6 +6,7 @@ struct Monster {
     var pos: CGPoint
     let monsterRadius: Double
     var gameScene: SKScene
+    var monster: SKShapeNode = SKShapeNode()
     
     init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint) {
         self.gameScene = gameScene
@@ -13,14 +14,15 @@ struct Monster {
         self.pos = pos
         self.direction = .left
     }
-    func draw() {
+    
+    mutating func draw(_ drawGreen: Bool = false) {
         let monserRadiusF = CGFloat(monsterRadius - 3)
         let path = CGMutablePath()
         path.move(to: CGPoint(x: pos.x - monserRadiusF, y: pos.y - monserRadiusF))
         path.addLine(to: CGPoint(x: pos.x - monserRadiusF, y: pos.y))
         path.addCurve(to: CGPoint(x: pos.x + monserRadiusF, y: pos.y),
-                      control1: CGPoint(x: pos.x - 4 - monserRadiusF, y: pos.y + monserRadiusF + 15),
-                      control2: CGPoint(x: pos.x + 4 + monserRadiusF, y: pos.y + monserRadiusF + 15)
+                      control1: CGPoint(x: pos.x - 4 - monserRadiusF, y: pos.y + monserRadiusF + 10),
+                      control2: CGPoint(x: pos.x + 4 + monserRadiusF, y: pos.y + monserRadiusF + 10)
         )
         path.addLine(to: CGPoint(x: pos.x + monserRadiusF, y: pos.y - monserRadiusF))
         
@@ -33,11 +35,21 @@ struct Monster {
         path.addLine(to: CGPoint(x: pos.x - (monserRadiusF - monserRadiusF / 4), y: pos.y - monserRadiusF - 4))
         path.closeSubpath()
 
-        let line = SKShapeNode(path: path)
-        line.zPosition = 2
-        line.strokeColor = .red
-        line.lineWidth = 2
-        gameScene.addChild(line)
+        self.monster = SKShapeNode(path: path)
+        monster.zPosition = 2
+        monster.strokeColor = .clear
+        monster.fillColor = .red
+        if drawGreen {
+            monster.fillColor = .green
+
+        }
+        gameScene.addChild(monster)
+    }
+    
+    mutating func moveTo(_ to: CGPoint) {
+        pos = to
+        monster.removeFromParent()
+        draw()
     }
 }
 
@@ -64,9 +76,9 @@ struct Monsters {
             pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2))))
     }
     
-    func drawMonsters() {
-        for monster in monsters {
-            monster.draw()
+    mutating func drawMonsters() {
+        for (index, _) in monsters.enumerated() {
+            monsters[index].draw()
         }
     }
     
@@ -76,6 +88,38 @@ struct Monsters {
     
     private func perHeigth(_ percent: CGFloat) -> CGFloat {
         return paths.roundToChangeValue(gameScene.size.height / 100 * percent)
+    }
+    
+    mutating func moveMonster(_ index: Int) {
+        let  currentPos = monsters[index].pos
+        func checkMove(_ pos: CGPoint) {
+            let checkMoveResult = self.paths.checkMove(from: currentPos, to: pos)
+            if checkMoveResult.valid {
+                monsters[index].moveTo(pos)
+            }
+        }
+        
+        let changeValue: CGFloat = CGFloat(self.changeValue)
+        switch monsters[index].direction {
+            case .up:
+                let pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y + changeValue))
+                checkMove(pos)
+            case .down:
+                let pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y - changeValue))
+                checkMove(pos)
+            case .right:
+                let pos = CGPoint(x: currentPos.x + changeValue, y: CGFloat(currentPos.y))
+                checkMove(pos)
+            case .left:
+                let pos = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
+                checkMove(pos)
+        }
+    }
+    
+    mutating func moveMonsters() {
+        for (index, _) in monsters.enumerated() {
+            moveMonster(index)
+        }
     }
 }
 
