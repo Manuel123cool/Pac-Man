@@ -63,11 +63,19 @@ struct Paths {
         
         addPaths()
         
-        deletPath(index: 17, vertical: true)
-        deletPath(index: 18, vertical: true)
-        deletPath(index: 22, vertical: false)
         deletPath(index: 17, vertical: false)
+        deletPath(index: 18, vertical: false)
+        deletPath(index: 22, vertical: true)
+        deletPath(index: 17, vertical: true)
+        deletPath(index: 1, vertical: false)
+        deletPath(index: 2, vertical: false)
+        deletPath(index: 34, vertical: false)
+        deletPath(index: 33, vertical: false)
 
+        addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: 0),
+                endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5)))
+        addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 8)),
+                endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: gameScene.size.height))
     }
     
     func perWidth(_ percent: CGFloat) -> CGFloat {
@@ -104,7 +112,7 @@ struct Paths {
     }
     
     mutating func deletPath(index: Int, vertical: Bool) {
-        if !vertical {
+        if vertical {
             paths[index].line.removeFromParent()
             paths.remove(at: index)
             paths.insert(Path(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: 0, y: 0), gameScene: gameScene), at: index)

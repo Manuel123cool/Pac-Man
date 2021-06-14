@@ -80,10 +80,15 @@ struct Figure {
     }
     
     mutating func changeDir(_ direction: Direction) {
+        guard dirChangeAllowed(direction) else {
+            return
+        }
         move(direction, noMove: true)
     }
     
     mutating func move(_ directionForChance: Direction, noMove: Bool = false) {
+        checkPortal()
+        
         breakForNotReached: if afterDirChange.yes {
             var reachedChangeDir = false
             switch afterDirChange.dir {
@@ -148,5 +153,29 @@ struct Figure {
                 let arc2Pos = arc1Pos
                 checkMove(arc1Pos: arc1Pos, arc2Pos: arc2Pos)
         }
+    }
+    
+    mutating func checkPortal() {
+        if firstArc.position.x == paths.roundToChangeValue(paths.perWidth(7.5 + 21.25 * 2)) {
+            if firstArc.position.y == gameScene.size.height {
+                firstArc.position.y = CGFloat(changeValue)
+                secondArc.position.y = CGFloat(changeValue)
+                pos = firstArc.position
+                direction = .up
+            } else if firstArc.position.y == 0 {
+                firstArc.position.y = gameScene.size.height - CGFloat(changeValue)
+                secondArc.position.y = gameScene.size.height - CGFloat(changeValue)
+                pos = firstArc.position
+                direction = .down
+            }
+        }
+    }
+    
+    func dirChangeAllowed(_ direction: Direction) -> Bool {
+        if pos.y > paths.roundToChangeValue(paths.perHeigth(7.5 + 21.25 * 8)) ||
+            pos.y < paths.roundToChangeValue(paths.perHeigth(7.5)) {
+            return false
+        }
+        return true
     }
 }
