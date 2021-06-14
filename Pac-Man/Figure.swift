@@ -13,7 +13,7 @@ struct Figure {
     let paths: Paths
     var pos: CGPoint
     var lastPos: CGPoint
-    var direction: Direction = .left
+    var direction: Direction = .down
     var afterDirChange: (yes: Bool, reachPos: CGFloat, dir: Direction) =
         (yes: false, reachPos: -1, dir: .left)
     let changeValue: Double = 0.5

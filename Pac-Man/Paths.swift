@@ -7,7 +7,7 @@ struct Path {
     let endPoint: CGPoint
     let alignmentVertical: Bool
     var line: SKShapeNode = SKShapeNode()
-    let drawYes = false
+    let drawYes = true
     
     init(startPoint: CGPoint, endPoint: CGPoint, gameScene: SKScene) {
         self.gameScene = gameScene
@@ -76,6 +76,23 @@ struct Paths {
                 endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5)))
         addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 8)),
                 endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: gameScene.size.height))
+    }
+    
+    init(gameScene: SKScene, changeValue: Double, forMonsters: Bool) {
+        self.init(gameScene: gameScene, changeValue: changeValue)
+        
+        let halfX: CGFloat = 21.25 / 2
+        let halfY: CGFloat = 10.625 / 2
+
+        addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 + halfX), y: perHeigth(7.5 + 10.625 * 3 + halfY)),
+                endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2 + halfX), y: perHeigth(7.5 + 10.625 * 3 + halfY)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 + halfX), y: perHeigth(7.5 + 10.625 * 4 + halfY)),
+                endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2 + halfX), y: perHeigth(7.5 + 10.625 * 4 + halfY)))
+        
+        addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 3 + halfY)),
+                endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 5)))
+        
     }
     
     func perWidth(_ percent: CGFloat) -> CGFloat {
