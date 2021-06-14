@@ -12,6 +12,7 @@ struct Figure {
     let gameScene: SKScene
     let paths: Paths
     var pos: CGPoint
+    var lastPos: CGPoint
     var direction: Direction = .left
     var afterDirChange: (yes: Bool, reachPos: CGFloat, dir: Direction) =
         (yes: false, reachPos: -1, dir: .left)
@@ -20,14 +21,25 @@ struct Figure {
     
     var firstArc: SKShapeNode = SKShapeNode()
     var secondArc: SKShapeNode = SKShapeNode()
+    var circle = SKShapeNode()
+    
     init(gameScene: SKScene) {
         self.gameScene = gameScene
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue)
         self.pos = paths.startPostion
+        self.lastPos = self.pos
         setupArcs(direction)
-        
+        setupCircle()
         let map = Map(gameScene: gameScene, pacManRadius: pacManRadius, paths: self.paths)
         map.draw()
+    }
+    
+    private mutating func setupCircle() {
+        circle = SKShapeNode(circleOfRadius: CGFloat(pacManRadius))
+        circle.fillColor = .clear
+        circle.zPosition = 1
+        circle.strokeColor = .clear
+        gameScene.addChild(circle)
     }
     
     private mutating func setupArcs(_ direction: Direction) {
@@ -47,6 +59,7 @@ struct Figure {
         
         firstArc = SKShapeNode(path: path)
         firstArc.fillColor = .yellow
+        firstArc.strokeColor = .clear
         firstArc.position = pos
         
         let rotationAction = SKAction.rotate(byAngle: CGFloat(40 * CGFloat.pi / 180), duration: 0.3)
@@ -69,6 +82,7 @@ struct Figure {
         
         secondArc = SKShapeNode(path: path1)
         secondArc.fillColor = .yellow
+        secondArc.strokeColor = .clear
         secondArc.position = pos
         
         let sequence1 = SKAction.sequence([rotationAction1, rotationAction])
@@ -80,7 +94,7 @@ struct Figure {
     }
     
     mutating func changeDir(_ direction: Direction) {
-        guard dirChangeAllowed(direction) else {
+        guard dirChangeAllowed() else {
             return
         }
         move(direction, noMove: true)
@@ -88,7 +102,6 @@ struct Figure {
     
     mutating func move(_ directionForChance: Direction, noMove: Bool = false) {
         checkPortal()
-        
         breakForNotReached: if afterDirChange.yes {
             var reachedChangeDir = false
             switch afterDirChange.dir {
@@ -131,6 +144,7 @@ struct Figure {
         if noMove {
             finalDir = directionForChance
         } else {
+            makeNotEating()
             finalDir = self.direction
         }
         
@@ -155,7 +169,7 @@ struct Figure {
         }
     }
     
-    mutating func checkPortal() {
+    private mutating func checkPortal() {
         if firstArc.position.x == paths.roundToChangeValue(paths.perWidth(7.5 + 21.25 * 2)) {
             if firstArc.position.y == gameScene.size.height {
                 firstArc.position.y = CGFloat(changeValue)
@@ -171,11 +185,21 @@ struct Figure {
         }
     }
     
-    func dirChangeAllowed(_ direction: Direction) -> Bool {
+    private func dirChangeAllowed() -> Bool {
         if pos.y > paths.roundToChangeValue(paths.perHeigth(7.5 + 21.25 * 8)) ||
             pos.y < paths.roundToChangeValue(paths.perHeigth(7.5)) {
             return false
         }
         return true
+    }
+    
+    private mutating func makeNotEating() {
+        if lastPos == pos {
+            circle.position = pos
+            circle.fillColor = .yellow
+        } else {
+            circle.fillColor = .clear
+        }
+        lastPos = pos
     }
 }

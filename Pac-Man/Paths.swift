@@ -86,7 +86,7 @@ struct Paths {
         return gameScene.size.height / 100 * percent
     }
     
-    mutating func addPath(startPoint: CGPoint, endPoint: CGPoint) {
+    private mutating func addPath(startPoint: CGPoint, endPoint: CGPoint) {
         let start = CGPoint(x: roundToChangeValue(startPoint.x),
             y: roundToChangeValue(startPoint.y))
         let end = CGPoint(x: roundToChangeValue(endPoint.x),
@@ -95,7 +95,7 @@ struct Paths {
       
     }
     
-    mutating func addPaths() {
+    private mutating func addPaths() {
         for row in 0..<8 {
             for column in 0..<5 {
                 addPath(startPoint: CGPoint(x: perWidth(CGFloat(column) * 21.25 + 7.5), y: perHeigth(CGFloat(row) * 10.625 + 7.5)),
@@ -111,7 +111,7 @@ struct Paths {
         }
     }
     
-    mutating func deletPath(index: Int, vertical: Bool) {
+    private mutating func deletPath(index: Int, vertical: Bool) {
         if vertical {
             paths[index].line.removeFromParent()
             paths.remove(at: index)
@@ -140,7 +140,7 @@ struct Paths {
         }
     }
     
-    func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
+    private func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
         let offsetValue: CGFloat = 10
         if firstValue >= secondValue - offsetValue &&
             firstValue <= secondValue + offsetValue {
@@ -149,7 +149,7 @@ struct Paths {
         return false
     }
     
-    func checkOnLine(vertical: Bool, path: Path, to: CGPoint) -> (valid: Bool, reachPos: CGFloat) {
+    private func checkOnLine(vertical: Bool, path: Path, to: CGPoint) -> (valid: Bool, reachPos: CGFloat) {
         if vertical && inRange(to.y, path.startPoint.y) {
             if to.x >= path.startPoint.x && to.x <= path.endPoint.x  {
                 return (valid: true, reachPos: path.startPoint.y)

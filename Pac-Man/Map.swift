@@ -11,15 +11,15 @@ struct Map {
         drawRects()
     }
     
-    func perWidth(_ percent: CGFloat) -> CGFloat {
+    private func perWidth(_ percent: CGFloat) -> CGFloat {
         return paths.roundToChangeValue(gameScene.size.width / 100 * percent)
     }
     
-    func perHeigth(_ percent: CGFloat) -> CGFloat {
+    private func perHeigth(_ percent: CGFloat) -> CGFloat {
         return paths.roundToChangeValue(gameScene.size.height / 100 * percent)
     }
     
-    func drawSurroundings() {
+    private func drawSurroundings() {
         let pacManRadiusF = CGFloat(pacManRadius + 4)
         let lineXLeft = perWidth(7.5) - pacManRadiusF
         let lineXRight = gameScene.size.width - lineXLeft
@@ -39,7 +39,7 @@ struct Map {
         drawLine(CGPoint(x: xMiddleRight, y: lineYUp), CGPoint(x: lineXRight, y: lineYUp))
     }
     
-    func drawRects() {
+    private func drawRects() {
         for index in 0..<(4 * 8) {
             if index == 13 || index == 14 || index == 17 || index == 18 {
                 continue
@@ -48,7 +48,7 @@ struct Map {
         }
     }
     
-    func drawRect(_ index: Int) {
+    private func drawRect(_ index: Int) {
         let pacManRadiusF = CGFloat(pacManRadius + 4)
         
         let column: CGFloat = CGFloat((index + 4) % 4)
@@ -82,7 +82,7 @@ struct Map {
         gameScene.addChild(line)
     }
     
-    func drawLine(_ from: CGPoint, _ to: CGPoint)  {
+    private func drawLine(_ from: CGPoint, _ to: CGPoint)  {
         let path = CGMutablePath()
         path.move(to: from)
         path.addLine(to: to)
