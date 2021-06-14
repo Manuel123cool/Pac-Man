@@ -207,4 +207,47 @@ struct Paths {
         }
         return (valid: false, reachPos: -1)
     }
+    
+    func checkMoveMonster(from: CGPoint, to: CGPoint) -> Bool {
+        let vertical: Bool
+        if from.x == to.x {
+            vertical = false
+        } else if from.y == from.y {
+            vertical = true
+        } else {
+            print("Error: No straight move")
+            return false
+        }
+        
+        for path in paths {
+            if path.alignmentVertical && vertical {
+                let chechOnLineResult = checkOnLineMonster(vertical: vertical, path: path, to: to)
+                if chechOnLineResult {
+                    return true
+                }
+            }
+            
+            if !path.alignmentVertical && !vertical {
+                let chechOnLineResult = checkOnLineMonster(vertical: vertical, path: path, to: to)
+                if chechOnLineResult {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+    
+    private func checkOnLineMonster(vertical: Bool, path: Path, to: CGPoint) -> Bool {
+        if vertical && to.y == path.startPoint.y {
+            if to.x >= path.startPoint.x && to.x <= path.endPoint.x  {
+                return true
+            }
+        } else if !vertical && to.x == path.startPoint.x {
+            if to.y >= path.startPoint.y && to.y <= path.endPoint.y  {
+                return true
+            }
+        }
+        return false
+
+    }
 }

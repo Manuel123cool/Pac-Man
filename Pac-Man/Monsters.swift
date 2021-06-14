@@ -51,6 +51,23 @@ struct Monster {
         monster.removeFromParent()
         draw()
     }
+    
+    mutating func changeDir(_ direction: Direction) {
+        self.direction = direction
+    }
+    
+    mutating func changeToOppositeDir() {
+        switch direction {
+            case .down:
+                changeDir(.up)
+            case .up:
+                changeDir(.down)
+            case .right:
+                changeDir(.left)
+            case .left:
+                changeDir(.right)
+        }
+    }
 }
 
 struct Monsters {
@@ -90,35 +107,67 @@ struct Monsters {
         return paths.roundToChangeValue(gameScene.size.height / 100 * percent)
     }
     
-    mutating func moveMonster(_ index: Int) {
+    mutating func moveMonster(_ index: Int) -> Bool {
         let  currentPos = monsters[index].pos
-        func checkMove(_ pos: CGPoint) {
-            let checkMoveResult = self.paths.checkMove(from: currentPos, to: pos)
-            if checkMoveResult.valid {
-                monsters[index].moveTo(pos)
+        var possibleMoves: [(CGPoint, Direction)] = []
+        
+        func checkMove(_ pos: CGPoint, _ direction: Direction) {
+            switch direction {
+                case .down:
+                    if monsters[index].direction == .up {
+                        return
+                    }
+                case .up:
+                    if monsters[index].direction == .down {
+                        return
+                    }
+                case .right:
+                    if monsters[index].direction == .left {
+                        return
+                    }
+                case .left:
+                    if monsters[index].direction == .right {
+                        return
+                    }
+            }
+            let checkMoveResult = self.paths.checkMoveMonster(from: currentPos, to: pos)
+            if checkMoveResult {
+                possibleMoves.append((pos, direction))
             }
         }
         
         let changeValue: CGFloat = CGFloat(self.changeValue)
-        switch monsters[index].direction {
-            case .up:
-                let pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y + changeValue))
-                checkMove(pos)
-            case .down:
-                let pos = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y - changeValue))
-                checkMove(pos)
-            case .right:
-                let pos = CGPoint(x: currentPos.x + changeValue, y: CGFloat(currentPos.y))
-                checkMove(pos)
-            case .left:
-                let pos = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
-                checkMove(pos)
+        
+        
+        let pos1 = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y + changeValue))
+        checkMove(pos1, .up)
+           
+        let pos2 = CGPoint(x: currentPos.x, y: CGFloat(currentPos.y - changeValue))
+        checkMove(pos2, .down)
+            
+        let pos3 = CGPoint(x: currentPos.x + changeValue, y: CGFloat(currentPos.y))
+        checkMove(pos3, .right)
+            
+        let pos4 = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
+        checkMove(pos4, .left)
+        
+        if possibleMoves.isEmpty {
+            return false
         }
+        
+        let randomIndex = Int.random(in: 0..<possibleMoves.count)
+        
+        monsters[index].moveTo(possibleMoves[randomIndex].0)
+        monsters[index].changeDir(possibleMoves[randomIndex].1)
+        
+        return true
     }
     
     mutating func moveMonsters() {
         for (index, _) in monsters.enumerated() {
-            moveMonster(index)
+            if !moveMonster(index) {
+                monsters[index].changeToOppositeDir()
+            }
         }
     }
 }
@@ -139,7 +188,6 @@ struct MonsterSpawn {
     
     func draw() {
         let pacManRadiusF = CGFloat(pacManRadius + 4)
-        //10.625 21.25
         
         drawLine(CGPoint(x: perWidth(7.5 + 21.25) + pacManRadiusF, y: perHeigth(7.5 + 10.625 * 3) + pacManRadiusF),
             CGPoint(x: perWidth(7.5 + 21.25 * 3) - pacManRadiusF, y: perHeigth(7.5 + 10.625 * 3) + pacManRadiusF))
