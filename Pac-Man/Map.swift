@@ -52,13 +52,13 @@ struct Map {
         let pacManRadiusF = CGFloat(pacManRadius + 4)
         
         let column: CGFloat = CGFloat((index + 4) % 4)
-        let baseX: CGFloat = (CGFloat(column) * perWidth(21.25))
+        let baseX: CGFloat = column * 21.25
         
         let row: Int = (index / 4)
-        let baseY: CGFloat = (CGFloat(row) * perHeigth(10.625))
+        let baseY: CGFloat = CGFloat(row) * 10.625
         
-        var bottomHight = baseY + perHeigth(7.5) + pacManRadiusF
-        var topHight = baseY + perHeigth(7.5 + 10.625) - pacManRadiusF
+        var bottomHight = perHeigth(7.5 + baseY) + pacManRadiusF
+        var topHight = perHeigth(7.5 + 10.625 + baseY) - pacManRadiusF
         
         switch index {
         case 1, 2:
@@ -69,10 +69,10 @@ struct Map {
             break
         }
         let path = CGMutablePath()
-        path.move(to: CGPoint(x: baseX + perWidth(7.5) + pacManRadiusF, y: bottomHight))
-        path.addLine(to: CGPoint(x: baseX + perWidth(7.5 + 21.25) - pacManRadiusF, y: bottomHight))
-        path.addLine(to: CGPoint(x: baseX + perWidth(7.5 + 21.25) - pacManRadiusF, y: topHight))
-        path.addLine(to: CGPoint(x: baseX + perWidth(7.5) + pacManRadiusF, y: topHight))
+        path.move(to: CGPoint(x: perWidth(7.5 + baseX) + pacManRadiusF, y: bottomHight))
+        path.addLine(to: CGPoint(x: perWidth(7.5 + 21.25 + baseX) - pacManRadiusF, y: bottomHight))
+        path.addLine(to: CGPoint(x: perWidth(7.5 + 21.25 + baseX) - pacManRadiusF, y: topHight))
+        path.addLine(to: CGPoint(x: perWidth(7.5 + baseX) + pacManRadiusF, y: topHight))
         path.closeSubpath()
 
         let line = SKShapeNode(path: path)

@@ -186,8 +186,8 @@ struct Figure {
     }
     
     private func dirChangeAllowed() -> Bool {
-        if pos.y > paths.roundToChangeValue(paths.perHeigth(7.5 + 21.25 * 8)) ||
-            pos.y < paths.roundToChangeValue(paths.perHeigth(7.5)) {
+        if pos.y > paths.roundToChangeValue(paths.perHeigth(7.5 + 10.625 * 8)) + CGFloat(pacManRadius) ||
+            pos.y < paths.roundToChangeValue(paths.perHeigth(7.5)) - CGFloat(pacManRadius) {
             return false
         }
         return true

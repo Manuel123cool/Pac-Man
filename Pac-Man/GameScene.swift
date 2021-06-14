@@ -3,9 +3,10 @@ import GameplayKit
 
 class GameScene: SKScene {
     var figure: Figure?
-    
+    var monsters: Monsters?
     override func didMove(to view: SKView) {
         figure = Figure(gameScene: self as SKScene)
+        monsters = Monsters(gameScene: self as SKScene, pacManRadius: figure!.pacManRadius)
         backgroundColor = SKColor.black
         
         addGesturRecognizer()
