@@ -35,6 +35,11 @@ struct Figure {
         map.draw()
     }
     
+    mutating func clear()  {
+        firstArc.removeFromParent()
+        secondArc.removeFromParent()
+    }
+    
     private mutating func setupCircle() {
         circle = SKShapeNode(circleOfRadius: CGFloat(pacManRadius))
         circle.fillColor = .clear

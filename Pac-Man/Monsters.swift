@@ -230,6 +230,21 @@ struct Monsters {
             }
         }
     }
+    
+    func rePositions() -> [CGPoint] {
+        var positions: [CGPoint] = []
+        for monster in monsters {
+            positions.append(monster.pos)
+        }
+        return positions
+    }
+    
+    func clear() {
+        for (index, _) in monsters.enumerated() {
+            monsters[index].monster.removeFromParent()
+                
+        }
+    }
 }
 
 struct MonsterSpawn {

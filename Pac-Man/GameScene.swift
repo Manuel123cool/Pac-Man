@@ -4,9 +4,10 @@ import GameplayKit
 class GameScene: SKScene {
     var figure: Figure?
     var monsters: Monsters?
+    var gameLogic: GameLogic?
     override func didMove(to view: SKView) {
-        figure = Figure(gameScene: self as SKScene)
-        monsters = Monsters(gameScene: self as SKScene, pacManRadius: figure!.pacManRadius)
+        initFunc()
+        
         backgroundColor = SKColor.black
         
         addGesturRecognizer()
@@ -21,6 +22,10 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         figure!.move(figure!.direction)
         monsters!.moveMonsters()
+        gameLogic!.update(figurePos: figure!.pos, monsterPositons: monsters!.rePositions())
+        if gameLogic!.checkLost() {
+            initFunc(true)
+        }
     }
     
     private func addGesturRecognizer() {
@@ -48,6 +53,14 @@ class GameScene: SKScene {
         }
     }
     
-    
+    func initFunc(_ clear: Bool = false)  {
+        if clear {
+            figure!.clear()
+            monsters!.clear()
+        }
+        figure = Figure(gameScene: self as SKScene)
+        monsters = Monsters(gameScene: self as SKScene, pacManRadius: figure!.pacManRadius)
+        gameLogic = GameLogic(radius: figure!.pacManRadius)
+    }
 }
 
