@@ -7,12 +7,12 @@ struct Monster {
     let monsterRadius: Double
     var gameScene: SKScene
     var monster: SKShapeNode = SKShapeNode()
-    
-    init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint) {
+    var outOfSpawn = false
+    init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint, direction: Direction) {
         self.gameScene = gameScene
         self.monsterRadius = monsterRadius
         self.pos = pos
-        self.direction = .left
+        self.direction = direction
     }
     
     mutating func draw(_ drawGreen: Bool = false) {
@@ -77,12 +77,14 @@ struct Monsters {
     let changeValue: Double = 0.5
     let monsterSpawn: MonsterSpawn
     let pacManRadius: Double
-    
+    let outOfSpawnPoint: CGPoint
+
     init(gameScene: SKScene, pacManRadius: Double) {
         self.gameScene = gameScene
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue, forMonsters: true)
         self.pacManRadius = pacManRadius
         self.monsterSpawn = MonsterSpawn(gameScene: gameScene, changeValue: changeValue, pacManRadius: pacManRadius)
+        self.outOfSpawnPoint = monsterSpawn.outOfSpawnPoint
         
         addMonsters()
         drawMonsters()
@@ -90,7 +92,8 @@ struct Monsters {
     
     mutating func addMonsters() {
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
-            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2))))
+            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
+                direction: Direction.right))
     }
     
     mutating func drawMonsters() {
@@ -155,12 +158,56 @@ struct Monsters {
             return false
         }
         
+        checkDirInSpawn(possibleMoves: &possibleMoves, index: index)
+        
         let randomIndex = Int.random(in: 0..<possibleMoves.count)
+        
+        guard checkInSpawn(pos: possibleMoves[randomIndex].0, index: index) else {
+            return false
+        }
         
         monsters[index].moveTo(possibleMoves[randomIndex].0)
         monsters[index].changeDir(possibleMoves[randomIndex].1)
         
+        
         return true
+    }
+    
+    mutating func checkInSpawn(pos: CGPoint, index: Int) -> Bool {
+        if pos == outOfSpawnPoint && !monsters[index].outOfSpawn{
+            monsters[index].outOfSpawn = true
+            return true
+        } else if pos == outOfSpawnPoint {
+            return false
+        }
+        return true
+    }
+    
+    private func checkDirInSpawn(possibleMoves: inout [(CGPoint, Direction)], index: Int) {
+        if !monsters[index].outOfSpawn {
+            var rightDir = false
+            var rightDirIndex = -1
+            var upDir = false
+            var leftDir = false
+            var leftDirIndex = -1
+            for (index, move) in possibleMoves.enumerated() {
+                if move.1 == .up {
+                    upDir = true
+                } else if move.1 == .right {
+                    rightDir = true
+                    rightDirIndex = index
+                } else if move.1 == .left {
+                    leftDir = true
+                    leftDirIndex = index
+                }
+            }
+            if rightDir && upDir {
+                possibleMoves.remove(at: rightDirIndex)
+                if leftDir {
+                    possibleMoves.remove(at: leftDirIndex - 1)
+                }
+            }
+        }
     }
     
     mutating func moveMonsters() {
@@ -177,12 +224,14 @@ struct MonsterSpawn {
     let paths: Paths
     let gameScene: SKScene
     let pacManRadius: Double
+    var outOfSpawnPoint = CGPoint(x: -1, y: -1)
 
     init(gameScene: SKScene, changeValue: Double, pacManRadius: Double) {
         self.gameScene = gameScene
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue)
         self.pacManRadius = pacManRadius
         
+        outOfSpawnPoint = CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 5) - CGFloat(pacManRadius + 4))
         draw()
     }
     

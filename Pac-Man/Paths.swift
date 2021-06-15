@@ -76,6 +76,7 @@ struct Paths {
                 endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5)))
         addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 8)),
                 endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: gameScene.size.height))
+
     }
     
     init(gameScene: SKScene, changeValue: Double, forMonsters: Bool) {
@@ -93,6 +94,8 @@ struct Paths {
         addPath(startPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 3 + halfY)),
                 endPoint: CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 5)))
         
+        deletPath(index: 36, vertical: false)
+        deletPath(index: 37, vertical: false)       
     }
     
     func perWidth(_ percent: CGFloat) -> CGFloat {
