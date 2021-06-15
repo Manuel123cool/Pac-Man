@@ -8,11 +8,13 @@ struct Monster {
     var gameScene: SKScene
     var monster: SKShapeNode = SKShapeNode()
     var outOfSpawn = false
-    init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint, direction: Direction) {
+    let color: SKColor
+    init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint, direction: Direction, color: SKColor) {
         self.gameScene = gameScene
         self.monsterRadius = monsterRadius
         self.pos = pos
         self.direction = direction
+        self.color = color
     }
     
     mutating func draw(_ drawGreen: Bool = false) {
@@ -38,7 +40,7 @@ struct Monster {
         self.monster = SKShapeNode(path: path)
         monster.zPosition = 2
         monster.strokeColor = .clear
-        monster.fillColor = .red
+        monster.fillColor = color
         if drawGreen {
             monster.fillColor = .green
 
@@ -93,7 +95,11 @@ struct Monsters {
     mutating func addMonsters() {
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
             pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
-                direction: Direction.right))
+            direction: Direction.right, color: .purple))
+        
+        monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
+            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
+            direction: Direction.left, color: .brown))
     }
     
     mutating func drawMonsters() {
@@ -185,26 +191,22 @@ struct Monsters {
     
     private func checkDirInSpawn(possibleMoves: inout [(CGPoint, Direction)], index: Int) {
         if !monsters[index].outOfSpawn {
-            var rightDir = false
-            var rightDirIndex = -1
-            var upDir = false
-            var leftDir = false
-            var leftDirIndex = -1
-            for (index, move) in possibleMoves.enumerated() {
-                if move.1 == .up {
-                    upDir = true
-                } else if move.1 == .right {
-                    rightDir = true
-                    rightDirIndex = index
-                } else if move.1 == .left {
-                    leftDir = true
-                    leftDirIndex = index
-                }
+            var yesDelete = false
+            if possibleMoves[0].1 == .up {
+                yesDelete = true
             }
-            if rightDir && upDir {
-                possibleMoves.remove(at: rightDirIndex)
-                if leftDir {
-                    possibleMoves.remove(at: leftDirIndex - 1)
+            
+            var oneMinusIndex = false
+            for (index, move) in possibleMoves.enumerated() {
+                if move.1 == .right && yesDelete{
+                    oneMinusIndex = true
+                    possibleMoves.remove(at: index)
+                } else if move.1 == .left && yesDelete {
+                    if oneMinusIndex {
+                        possibleMoves.remove(at: index - 1)
+                    } else {
+                        possibleMoves.remove(at: index)
+                    }
                 }
             }
         }

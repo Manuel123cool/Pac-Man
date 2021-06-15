@@ -26,6 +26,7 @@ struct Figure {
     init(gameScene: SKScene) {
         self.gameScene = gameScene
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue)
+        
         self.pos = paths.startPostion
         self.lastPos = self.pos
         setupArcs(direction)
