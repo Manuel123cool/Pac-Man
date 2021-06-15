@@ -100,6 +100,18 @@ struct Monsters {
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
             pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
             direction: Direction.left, color: .brown))
+        
+        monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
+            pos: CGPoint(x: perWidth(7.5 + 21.25 * CGFloat(2)), y: perHeigth(7.5 + 10.625 * 4)),
+            direction: Direction.up, color: .darkGray))
+        
+        monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
+            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)),
+            direction: Direction.right, color: .orange))
+        
+        monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
+            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)),
+            direction: Direction.left, color: .gray))
     }
     
     mutating func drawMonsters() {
@@ -196,17 +208,16 @@ struct Monsters {
                 yesDelete = true
             }
             
-            var oneMinusIndex = false
+            var minusIndex = 0
             for (index, move) in possibleMoves.enumerated() {
                 if move.1 == .right && yesDelete{
-                    oneMinusIndex = true
-                    possibleMoves.remove(at: index)
+                    possibleMoves.remove(at: index - minusIndex)
+                    minusIndex += 1
                 } else if move.1 == .left && yesDelete {
-                    if oneMinusIndex {
-                        possibleMoves.remove(at: index - 1)
-                    } else {
-                        possibleMoves.remove(at: index)
-                    }
+                    possibleMoves.remove(at: index  - minusIndex)
+                } else if move.1 == .down {
+                    possibleMoves.remove(at: index - minusIndex)
+                    minusIndex += 1
                 }
             }
         }
