@@ -4,9 +4,11 @@ import GameplayKit
 class GameScene: SKScene {
     var figure: Figure?
     var monsters: Monsters?
+    var points: Points?
     var gameLogic: GameLogic?
     override func didMove(to view: SKView) {
         initFunc()
+        gameLogic = GameLogic(radius: figure!.pacManRadius)
         
         backgroundColor = SKColor.black
         
@@ -60,7 +62,7 @@ class GameScene: SKScene {
         }
         figure = Figure(gameScene: self as SKScene)
         monsters = Monsters(gameScene: self as SKScene, pacManRadius: figure!.pacManRadius)
-        gameLogic = GameLogic(radius: figure!.pacManRadius)
+        points = Points(gameScene: self as SKScene, changeValue: figure!.changeValue)
     }
 }
 

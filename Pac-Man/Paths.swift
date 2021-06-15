@@ -7,7 +7,7 @@ struct Path {
     let endPoint: CGPoint
     let alignmentVertical: Bool
     var line: SKShapeNode = SKShapeNode()
-    let drawYes = true
+    let drawYes = false
     
     init(startPoint: CGPoint, endPoint: CGPoint, gameScene: SKScene) {
         self.gameScene = gameScene
@@ -53,6 +53,7 @@ struct Paths {
     var paths: [Path] = []
     var startPostion = CGPoint(x: -1, y: -1)
     let changeValue: Double
+    var deltedPaths: [Path] = []
 
     init(gameScene: SKScene, changeValue: Double) {
         self.gameScene = gameScene
@@ -96,6 +97,13 @@ struct Paths {
         deletPath(index: 37, vertical: false)
     }
     
+    init(gameScene: SKScene, changeValue: Double, forPoints: Bool) {
+        self.init(gameScene: gameScene, changeValue: changeValue)
+        
+        deletPath(index: 36, vertical: false)
+        deletPath(index: 37, vertical: false)
+    }
+    
     func perWidth(_ percent: CGFloat) -> CGFloat {
         return gameScene.size.width / 100 * percent
     }
@@ -131,10 +139,12 @@ struct Paths {
     
     private mutating func deletPath(index: Int, vertical: Bool) {
         if vertical {
+            deltedPaths.append(paths[index])
             paths[index].line.removeFromParent()
             paths.remove(at: index)
             paths.insert(Path(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: 0, y: 0), gameScene: gameScene), at: index)
         } else {
+            deltedPaths.append(paths[index + 40])
             paths[index + 40].line.removeFromParent()
             paths.remove(at: index + 40)
             paths.insert(Path(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: 0, y: 0), gameScene: gameScene), at: index + 40)
@@ -167,7 +177,7 @@ struct Paths {
         return false
     }
     
-    private func checkOnLine(vertical: Bool, path: Path, to: CGPoint) -> (valid: Bool, reachPos: CGFloat) {
+    func checkOnLine(vertical: Bool, path: Path, to: CGPoint) -> (valid: Bool, reachPos: CGFloat) {
         if vertical && inRange(to.y, path.startPoint.y) {
             if to.x >= path.startPoint.x && to.x <= path.endPoint.x  {
                 return (valid: true, reachPos: path.startPoint.y)

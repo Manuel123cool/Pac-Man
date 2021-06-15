@@ -38,6 +38,7 @@ struct Figure {
     mutating func clear()  {
         firstArc.removeFromParent()
         secondArc.removeFromParent()
+        circle.removeFromParent()
     }
     
     private mutating func setupCircle() {

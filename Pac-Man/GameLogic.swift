@@ -21,7 +21,7 @@ struct GameLogic {
                         return true
                     }
                 } else {
-                    if figurePos.x - radiusF > monsterPos.x + radiusF {
+                    if figurePos.x - radiusF < monsterPos.x + radiusF {
                         return true
                     }
                 }
@@ -31,7 +31,7 @@ struct GameLogic {
                         return true
                     }
                 } else {
-                    if figurePos.y - radiusF > monsterPos.y + radiusF {
+                    if figurePos.y - radiusF < monsterPos.y + radiusF {
                         return true
                     }
                 }
@@ -47,10 +47,13 @@ struct GameLogic {
         }
     }
     
-    func checkLost() -> Bool {
+    mutating func checkLost() -> Bool {
         if lost {
+            lost = false
+            lives = 1
             return true
         }
         return false
     }
 }
+
