@@ -28,29 +28,28 @@ struct GameLogic {
     }
     
     mutating func checkBeeingEaten(figurePos: CGPoint, monsterPositons: [CGPoint]) -> Bool {
-        
         let radiusF = CGFloat(radius)
         for monsterPos in monsterPositons {
-            if figurePos.y == monsterPos.y {
-                if figurePos.x < monsterPos.x {
-                    if figurePos.x + radiusF > monsterPos.x - radiusF {
-                        return true
-                    }
-                } else {
-                    if figurePos.x - radiusF < monsterPos.x + radiusF {
-                        return true
-                    }
-                }
-            } else if figurePos.x == monsterPos.x {
-                if figurePos.y < monsterPos.y {
-                    if figurePos.y + radiusF > monsterPos.y - radiusF {
-                        return true
-                    }
-                } else {
-                    if figurePos.y - radiusF < monsterPos.y + radiusF {
-                        return true
-                    }
-                }
+            var x1: CGFloat = monsterPos.x
+            var x2: CGFloat = figurePos.x
+            
+            var y1: CGFloat = monsterPos.y
+            var y2: CGFloat = figurePos.y
+            if monsterPos.x > figurePos.x {
+                x1 = figurePos.x
+                x2 = monsterPos.x
+            }
+            x2 -= x1
+            
+            if monsterPos.y > figurePos.y {
+                y1 = figurePos.y
+                y2 = monsterPos.y
+            }
+            y2 -= y1
+            
+            let betweenPoins = (pow(x2, 2) + pow(y2, 2)).squareRoot()
+            if betweenPoins - radiusF * 2 < 0 {
+                return true
             }
         }
         return false

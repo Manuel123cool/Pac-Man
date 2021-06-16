@@ -184,7 +184,7 @@ struct Monsters {
     mutating func moveMonster(_ index: Int) -> Bool {
         let  currentPos = monsters[index].pos
         var possibleMoves: [(CGPoint, Direction)] = []
-        
+        var collosionOccurred = false
         func checkMove(_ pos: CGPoint, _ direction: Direction) {
             switch direction {
                 case .down:
@@ -205,18 +205,18 @@ struct Monsters {
                     }
             }
             
-            if isSelfColliding(newPos: pos, oldPos: currentPos) {
-                possibleMoves.append((pos.opposite(changeValue: CGFloat(changeValue),
-                    direction: direction), direction.opposite()))
-                return
-            }
-            
             let checkMoveResult = self.paths.checkMoveMonster(from: currentPos, to: pos)
             if checkMoveResult {
+                if isSelfColliding(newPos: pos, oldPos: currentPos) {
+                    monsters[index].moveTo(pos.opposite(changeValue: CGFloat(changeValue),
+                        direction: direction.opposite()))
+                    monsters[index].changeToOppositeDir()
+                    collosionOccurred = true
+                    return
+                }
                 possibleMoves.append((pos, direction))
             }
         }
-        
         let changeValue: CGFloat = CGFloat(self.changeValue)
         
         
@@ -232,7 +232,9 @@ struct Monsters {
         let pos4 = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
         checkMove(pos4, .left)
         
-        
+        if collosionOccurred {
+            return true
+        }
         
         checkDirInSpawn(possibleMoves: &possibleMoves, index: index)
         
@@ -253,7 +255,7 @@ struct Monsters {
     }
     
     mutating func checkInSpawn(pos: CGPoint, index: Int) -> Bool {
-        if pos == outOfSpawnPoint && !monsters[index].outOfSpawn{
+        if pos == outOfSpawnPoint && !monsters[index].outOfSpawn {
             monsters[index].outOfSpawn = true
             return true
         } else if pos == outOfSpawnPoint {
