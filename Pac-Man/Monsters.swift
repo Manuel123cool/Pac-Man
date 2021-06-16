@@ -1,6 +1,21 @@
 import SpriteKit
 import GameplayKit
 
+extension CGPoint {
+    func opposite(changeValue: CGFloat, direction: Direction) -> CGPoint {
+        switch direction {
+            case .down:
+                return CGPoint(x: self.x, y: self.y - changeValue)
+            case .up:
+                return CGPoint(x: self.x, y: self.y + changeValue)
+            case .right:
+                return CGPoint(x: self.x - changeValue, y: self.y)
+            case .left:
+                return CGPoint(x: self.x + changeValue, y: self.y)
+        }
+    }
+}
+
 struct Monster {
     var direction: Direction
     var pos: CGPoint
@@ -9,12 +24,17 @@ struct Monster {
     var monster: SKShapeNode = SKShapeNode()
     var outOfSpawn = false
     let color: SKColor
-    init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint, direction: Direction, color: SKColor) {
+    let waiting: TimeInterval
+    let startTime: TimeInterval
+    init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint, direction: Direction, color: SKColor, waiting: TimeInterval) {
         self.gameScene = gameScene
         self.monsterRadius = monsterRadius
         self.pos = pos
         self.direction = direction
         self.color = color
+        self.waiting = waiting
+        let newDate = Date()
+        startTime = newDate.timeIntervalSince1970
     }
     
     mutating func draw(_ drawGreen: Bool = false) {
@@ -47,7 +67,18 @@ struct Monster {
         gameScene.addChild(monster)
     }
     
+    private func checkTime() -> Bool {
+        let currentDate = Date()
+        if currentDate.timeIntervalSince1970 > startTime + waiting {
+            return true
+        }
+        return false
+    }
+    
     mutating func moveTo(_ to: CGPoint) {
+        guard checkTime() else {
+            return
+        }
         pos = to
         monster.removeFromParent()
         draw()
@@ -58,16 +89,7 @@ struct Monster {
     }
     
     mutating func changeToOppositeDir() {
-        switch direction {
-            case .down:
-                changeDir(.up)
-            case .up:
-                changeDir(.down)
-            case .right:
-                changeDir(.left)
-            case .left:
-                changeDir(.right)
-        }
+        changeDir(direction.opposite())
     }
 }
 
@@ -91,26 +113,58 @@ struct Monsters {
         drawMonsters()
     }
     
+    
+    func isSelfColliding(newPos: CGPoint, oldPos: CGPoint) -> Bool {
+        let radiusF = CGFloat(pacManRadius)
+        for monster in monsters {
+            guard monster.pos != oldPos else {
+                continue
+            }
+            var x1: CGFloat = monster.pos.x
+            var x2: CGFloat = newPos.x
+            
+            var y1: CGFloat = monster.pos.y
+            var y2: CGFloat = newPos.y
+            if monster.pos.x > newPos.x {
+                x1 = newPos.x
+                x2 = monster.pos.x
+            }
+            x2 -= x1
+            
+            if monster.pos.y > newPos.y {
+                y1 = newPos.y
+                y2 = monster.pos.y
+            }
+            y2 -= y1
+            
+            let betweenPoins = (pow(x2, 2) + pow(y2, 2)).squareRoot()
+            if betweenPoins - radiusF * 2 < 0 {
+                return true
+            }
+        }
+        return false
+    }
+    
     mutating func addMonsters() {
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
             pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
-            direction: Direction.right, color: .purple))
+            direction: Direction.right, color: .purple, waiting: 8))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
             pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
-            direction: Direction.left, color: .brown))
+            direction: Direction.left, color: .brown, waiting: 10))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
             pos: CGPoint(x: perWidth(7.5 + 21.25 * CGFloat(2)), y: perHeigth(7.5 + 10.625 * 4)),
-            direction: Direction.up, color: .darkGray))
+            direction: Direction.up, color: .darkGray, waiting: 6))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
             pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)),
-            direction: Direction.right, color: .orange))
+            direction: Direction.right, color: .orange, waiting: 2))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
             pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(4))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)),
-            direction: Direction.left, color: .gray))
+            direction: Direction.left, color: .gray, waiting: 4))
     }
     
     mutating func drawMonsters() {
@@ -150,6 +204,13 @@ struct Monsters {
                         return
                     }
             }
+            
+            if isSelfColliding(newPos: pos, oldPos: currentPos) {
+                possibleMoves.append((pos.opposite(changeValue: CGFloat(changeValue),
+                    direction: direction), direction.opposite()))
+                return
+            }
+            
             let checkMoveResult = self.paths.checkMoveMonster(from: currentPos, to: pos)
             if checkMoveResult {
                 possibleMoves.append((pos, direction))

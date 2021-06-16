@@ -6,6 +6,19 @@ enum Direction: CGFloat {
     case right = 180
     case up = 270
     case down = 90
+    
+    func opposite() -> Direction {
+        switch self {
+            case .down:
+                return .up
+            case .up:
+                return .down
+            case .right:
+                return .left
+            case .left:
+                return .right
+        }
+    }
 }
 
 struct Figure {

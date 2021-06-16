@@ -28,6 +28,7 @@ struct GameLogic {
     }
     
     mutating func checkBeeingEaten(figurePos: CGPoint, monsterPositons: [CGPoint]) -> Bool {
+        
         let radiusF = CGFloat(radius)
         for monsterPos in monsterPositons {
             if figurePos.y == monsterPos.y {
@@ -54,6 +55,7 @@ struct GameLogic {
         }
         return false
     }
+
     
     mutating func initLabel() {
         pointsLabel = SKLabelNode(fontNamed: "Chalkduster")
@@ -69,7 +71,7 @@ struct GameLogic {
         pointsLabel.text = "Points: \(overAllPoints)"
     }
     
-    private mutating func loosesLive() {
+    mutating func loosesLive() {
         lives -= 1
         if lives == 0 {
             lost = true
@@ -86,4 +88,3 @@ struct GameLogic {
         return false
     }
 }
-
