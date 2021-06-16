@@ -43,7 +43,6 @@ struct Monster {
         monster.fillColor = color
         if drawGreen {
             monster.fillColor = .green
-
         }
         gameScene.addChild(monster)
     }
@@ -76,7 +75,7 @@ struct Monsters {
     var monsters: [Monster] = []
     let gameScene: SKScene
     let paths: Paths
-    let changeValue: Double = 0.5
+    let changeValue: Double = 1
     let monsterSpawn: MonsterSpawn
     let pacManRadius: Double
     let outOfSpawnPoint: CGPoint
@@ -172,11 +171,13 @@ struct Monsters {
         let pos4 = CGPoint(x: currentPos.x - changeValue, y: CGFloat(currentPos.y))
         checkMove(pos4, .left)
         
+        
+        
+        checkDirInSpawn(possibleMoves: &possibleMoves, index: index)
+        
         if possibleMoves.isEmpty {
             return false
         }
-        
-        checkDirInSpawn(possibleMoves: &possibleMoves, index: index)
         
         let randomIndex = Int.random(in: 0..<possibleMoves.count)
         
@@ -186,7 +187,6 @@ struct Monsters {
         
         monsters[index].moveTo(possibleMoves[randomIndex].0)
         monsters[index].changeDir(possibleMoves[randomIndex].1)
-        
         
         return true
     }
@@ -202,6 +202,10 @@ struct Monsters {
     }
     
     private func checkDirInSpawn(possibleMoves: inout [(CGPoint, Direction)], index: Int) {
+        guard !possibleMoves.isEmpty else {
+            return
+        }
+        
         if !monsters[index].outOfSpawn {
             var yesDelete = false
             if possibleMoves[0].1 == .up {
@@ -259,7 +263,7 @@ struct MonsterSpawn {
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue)
         self.pacManRadius = pacManRadius
         
-        outOfSpawnPoint = CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 5) - CGFloat(pacManRadius + 4))
+        outOfSpawnPoint = CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 5 - 10.625 / 4))
         draw()
     }
     

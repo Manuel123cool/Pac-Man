@@ -59,6 +59,7 @@ class GameScene: SKScene {
         if clear {
             figure!.clear()
             monsters!.clear()
+            points!.clear()
         }
         figure = Figure(gameScene: self as SKScene)
         monsters = Monsters(gameScene: self as SKScene, pacManRadius: figure!.pacManRadius)

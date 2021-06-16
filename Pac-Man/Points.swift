@@ -116,4 +116,10 @@ struct Points {
             }
         }
     }
+    
+    func clear() {
+        for (index, _) in points.enumerated() {
+            points[index].removeFromParent()
+        }
+    }
 }

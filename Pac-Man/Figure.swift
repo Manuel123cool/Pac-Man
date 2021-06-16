@@ -16,7 +16,7 @@ struct Figure {
     var direction: Direction = .down
     var afterDirChange: (yes: Bool, reachPos: CGFloat, dir: Direction) =
         (yes: false, reachPos: -1, dir: .left)
-    let changeValue: Double = 0.5
+    let changeValue: Double = 1
     let pacManRadius: Double = 15
     
     var firstArc: SKShapeNode = SKShapeNode()
