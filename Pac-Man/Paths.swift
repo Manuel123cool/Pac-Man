@@ -168,7 +168,7 @@ struct Paths {
         }
     }
     
-    private func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
+    func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
         let offsetValue: CGFloat = 10
         if firstValue >= secondValue - offsetValue &&
             firstValue <= secondValue + offsetValue {

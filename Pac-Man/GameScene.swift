@@ -8,7 +8,7 @@ class GameScene: SKScene {
     var gameLogic: GameLogic?
     override func didMove(to view: SKView) {
         initFunc()
-        gameLogic = GameLogic(radius: figure!.pacManRadius)
+        gameLogic = GameLogic(radius: figure!.pacManRadius, gameScene: self as SKScene)
         
         backgroundColor = SKColor.black
         
@@ -24,7 +24,7 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         figure!.move(figure!.direction)
         monsters!.moveMonsters()
-        gameLogic!.update(figurePos: figure!.pos, monsterPositons: monsters!.rePositions())
+        gameLogic!.update(figurePos: figure!.pos, monsterPositons: monsters!.rePositions(), points: &points!)
         if gameLogic!.checkLost() {
             initFunc(true)
         }
@@ -62,7 +62,7 @@ class GameScene: SKScene {
         }
         figure = Figure(gameScene: self as SKScene)
         monsters = Monsters(gameScene: self as SKScene, pacManRadius: figure!.pacManRadius)
-        points = Points(gameScene: self as SKScene, changeValue: figure!.changeValue)
+        points = Points(gameScene: self as SKScene, changeValue: figure!.changeValue, pacManRadius: figure!.pacManRadius)
     }
 }
 
