@@ -26,6 +26,9 @@ struct Monster {
     let color: SKColor
     let waiting: TimeInterval
     let startTime: TimeInterval
+    var collissionOccurred = false
+    var afterCollisonCount = 0
+    
     init(gameScene: SKScene, monsterRadius: Double, pos: CGPoint, direction: Direction, color: SKColor, waiting: TimeInterval) {
         self.gameScene = gameScene
         self.monsterRadius = monsterRadius
@@ -91,6 +94,16 @@ struct Monster {
     mutating func changeToOppositeDir() {
         changeDir(direction.opposite())
     }
+    
+    mutating func chackAfterCollison() {
+        if collissionOccurred {
+            afterCollisonCount += 1
+            if afterCollisonCount > 10 {
+                collissionOccurred = false
+                afterCollisonCount = 0
+            }
+        }
+    }
 }
 
 struct Monsters {
@@ -125,6 +138,7 @@ struct Monsters {
             
             var y1: CGFloat = monster.pos.y
             var y2: CGFloat = newPos.y
+            
             if monster.pos.x > newPos.x {
                 x1 = newPos.x
                 x2 = monster.pos.x
@@ -182,36 +196,24 @@ struct Monsters {
     }
     
     mutating func moveMonster(_ index: Int) -> Bool {
+        monsters[index].chackAfterCollison()
+        
         let  currentPos = monsters[index].pos
         var possibleMoves: [(CGPoint, Direction)] = []
         var collosionOccurred = false
         func checkMove(_ pos: CGPoint, _ direction: Direction) {
-            switch direction {
-                case .down:
-                    if monsters[index].direction == .up {
-                        return
-                    }
-                case .up:
-                    if monsters[index].direction == .down {
-                        return
-                    }
-                case .right:
-                    if monsters[index].direction == .left {
-                        return
-                    }
-                case .left:
-                    if monsters[index].direction == .right {
-                        return
-                    }
+            if direction == monsters[index].direction.opposite() {
+                return
             }
             
             let checkMoveResult = self.paths.checkMoveMonster(from: currentPos, to: pos)
             if checkMoveResult {
-                if isSelfColliding(newPos: pos, oldPos: currentPos) {
+                if isSelfColliding(newPos: pos, oldPos: currentPos) && !monsters[index].collissionOccurred {
                     monsters[index].moveTo(pos.opposite(changeValue: CGFloat(changeValue),
                         direction: direction.opposite()))
                     monsters[index].changeToOppositeDir()
                     collosionOccurred = true
+                    monsters[index].collissionOccurred = true
                     return
                 }
                 possibleMoves.append((pos, direction))
