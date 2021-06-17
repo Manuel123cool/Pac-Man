@@ -141,24 +141,19 @@ struct Monsters {
     
     mutating func addMonsters() {
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
-            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
-            direction: Direction.right, color: .purple, waiting: 8))
+            pos: monsterSpawn.spawnPos[0], direction: Direction.right, color: .purple, waiting: 2))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
-            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)),
-            direction: Direction.left, color: .brown, waiting: 10))
+            pos: monsterSpawn.spawnPos[1], direction: Direction.left, color: .brown, waiting: 4))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
-            pos: CGPoint(x: perWidth(7.5 + 21.25 * CGFloat(2)), y: perHeigth(7.5 + 10.625 * 4)),
-            direction: Direction.up, color: .darkGray, waiting: 6))
+            pos: monsterSpawn.spawnPos[2], direction: Direction.up, color: .darkGray, waiting: 6))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
-            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)),
-            direction: Direction.right, color: .orange, waiting: 2))
+            pos: monsterSpawn.spawnPos[3], direction: Direction.right, color: .orange, waiting: 8))
         
         monsters.append(Monster(gameScene: gameScene, monsterRadius: pacManRadius,
-            pos: CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)),
-            direction: Direction.left, color: .gray, waiting: 4))
+            pos: monsterSpawn.spawnPos[4], direction: Direction.left, color: .gray, waiting: 10))
     }
     
     mutating func drawMonsters() {
@@ -220,8 +215,8 @@ struct Monsters {
             return
         }
         
-        let nearestIndex = reNearestToPlayer(possibleMoves: possibleMoves, figurePos: figurePos)
-        let nextMove = possibleMoves[nearestIndex]
+        let randomIndex = Int.random(in: 0..<possibleMoves.count)
+        let nextMove = possibleMoves[randomIndex]
         
         guard checkInSpawn(pos: nextMove.0, index: index) else {
             monsters[index].changeToOppositeDir()
@@ -230,20 +225,6 @@ struct Monsters {
         
         monsters[index].moveTo(nextMove.0)
         monsters[index].changeDir(nextMove.1)
-        
-        return
-    }
-    
-    func reNearestToPlayer(possibleMoves: [(CGPoint, Direction)], figurePos: CGPoint) -> Int {
-        var nearest: (CGFloat, Int) = (gameScene.size.height * 10, 0)
-        for (index, possibleMove) in possibleMoves.enumerated() {
-            let distance = Monsters.distanceBetween(point1: possibleMove.0, point2: figurePos)
-            if distance < nearest.0 {
-                nearest.0 = distance
-                nearest.1 = index
-            }
-        }
-        return nearest.1
     }
     
     func deleteOppositeIfPossible(possibleMoves: inout [(CGPoint, Direction)], index: Int) {
@@ -357,14 +338,23 @@ struct MonsterSpawn {
     let pacManRadius: Double
     var outOfSpawnPoint = CGPoint(x: -1, y: -1)
     var lines: [SKShapeNode] = []
-    
+    var spawnPos: [CGPoint] = []
     init(gameScene: SKScene, changeValue: Double, pacManRadius: Double) {
         self.gameScene = gameScene
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue)
         self.pacManRadius = pacManRadius
         
         outOfSpawnPoint = CGPoint(x: perWidth(7.5 + 21.25 * 2), y: perHeigth(7.5 + 10.625 * 5 - 10.625 / 4))
+        initSpawnPos()
         draw()
+    }
+    
+    mutating func initSpawnPos()  {
+        spawnPos.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)))
+        spawnPos.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)))
+        spawnPos.append(CGPoint(x: perWidth(7.5 + 21.25 * CGFloat(2)), y: perHeigth(7.5 + 10.625 * 4)))
+        spawnPos.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)))
+        spawnPos.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)))
     }
     
     mutating func draw() {
@@ -414,14 +404,7 @@ struct MonsterSpawn {
     }
     
     func moveToSpawn(_ monster: inout Monster, _ monsters: [Monster]) {
-        var spawns: [CGPoint] = []
-        spawns.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)))
-        spawns.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 4 + 10.625 / 2)))
-        spawns.append(CGPoint(x: perWidth(7.5 + 21.25 * CGFloat(2)), y: perHeigth(7.5 + 10.625 * 4)))
-        spawns.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) - (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)))
-        spawns.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)))
-        
-        spawnLoop: for spawn in spawns {
+        spawnLoop: for spawn in spawnPos {
             for monsterLoop in monsters {
                 if Monsters.distanceBetween(point1: monsterLoop.pos, point2: spawn) - CGFloat(pacManRadius) * 2 < 0 {
                     continue spawnLoop
