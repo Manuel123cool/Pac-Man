@@ -28,7 +28,7 @@ struct GameLogic {
     mutating func update(figurePos: CGPoint, points: inout Points, monsters: inout Monsters) {
         let monsterPositons = monsters.rePositions()
         let pointsUpdateResult = points.update(figurePos: figurePos)
-        pointsNum = pointsUpdateResult.0
+        pointsNum += pointsUpdateResult.0
         pointsFromCurrentLevel = pointsUpdateResult.0
         if pointsUpdateResult.1 {
             hasWon()
