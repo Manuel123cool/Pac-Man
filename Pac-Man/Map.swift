@@ -5,8 +5,9 @@ struct Map {
     let gameScene: SKScene
     let pacManRadius: Double
     let paths: Paths
+    var drawObjects: [SKShapeNode] = []
     
-    func draw() {
+    mutating func draw() {
         drawSurroundings()
         drawRects()
     }
@@ -19,7 +20,7 @@ struct Map {
         return paths.roundToChangeValue(gameScene.size.height / 100 * percent)
     }
     
-    private func drawSurroundings() {
+    private mutating func drawSurroundings() {
         let pacManRadiusF = CGFloat(pacManRadius + 4)
         let lineXLeft = perWidth(7.5) - pacManRadiusF
         let lineXRight = gameScene.size.width - lineXLeft
@@ -39,7 +40,7 @@ struct Map {
         drawLine(CGPoint(x: xMiddleRight, y: lineYUp), CGPoint(x: lineXRight, y: lineYUp))
     }
     
-    private func drawRects() {
+    private mutating func drawRects() {
         for index in 0..<(4 * 8) {
             if index == 13 || index == 14 || index == 17 || index == 18 {
                 continue
@@ -48,7 +49,7 @@ struct Map {
         }
     }
     
-    private func drawRect(_ index: Int) {
+    private mutating func drawRect(_ index: Int) {
         let pacManRadiusF = CGFloat(pacManRadius + 4)
         
         let column: CGFloat = CGFloat((index + 4) % 4)
@@ -75,14 +76,17 @@ struct Map {
         path.addLine(to: CGPoint(x: perWidth(7.5 + baseX) + pacManRadiusF, y: topHight))
         path.closeSubpath()
 
+        
         let line = SKShapeNode(path: path)
         line.zPosition = 0
         line.strokeColor = .blue
         line.lineWidth = 2
-        gameScene.addChild(line)
+        
+        drawObjects.append(line)
+        gameScene.addChild(drawObjects.last!)
     }
     
-    private func drawLine(_ from: CGPoint, _ to: CGPoint)  {
+    private mutating func drawLine(_ from: CGPoint, _ to: CGPoint)  {
         let path = CGMutablePath()
         path.move(to: from)
         path.addLine(to: to)
@@ -91,6 +95,14 @@ struct Map {
         line.zPosition = 0
         line.strokeColor = .blue
         line.lineWidth = 2
-        gameScene.addChild(line)
+        
+        drawObjects.append(line)
+        gameScene.addChild(drawObjects.last!)
+    }
+    
+    func clear() {
+        for (index, _) in drawObjects.enumerated() {
+            drawObjects[index].removeFromParent()
+        }
     }
 }

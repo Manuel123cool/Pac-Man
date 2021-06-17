@@ -29,29 +29,32 @@ struct Figure {
     var direction: Direction = .down
     var afterDirChange: (yes: Bool, reachPos: CGFloat, dir: Direction) =
         (yes: false, reachPos: -1, dir: .left)
-    let changeValue: Double = 1
+    var changeValue: Double
     let pacManRadius: Double = 15
     
     var firstArc: SKShapeNode = SKShapeNode()
     var secondArc: SKShapeNode = SKShapeNode()
     var circle = SKShapeNode()
     
-    init(gameScene: SKScene) {
+    var map: Map
+    init(gameScene: SKScene, changeValue: Double) {
+        self.changeValue = changeValue
         self.gameScene = gameScene
         self.paths = Paths(gameScene: self.gameScene, changeValue: changeValue)
-        
         self.pos = paths.startPostion
         self.lastPos = self.pos
+        self.map = Map(gameScene: gameScene, pacManRadius: pacManRadius, paths: self.paths)
+        map.draw()
         setupArcs(direction)
         setupCircle()
-        let map = Map(gameScene: gameScene, pacManRadius: pacManRadius, paths: self.paths)
-        map.draw()
+        
     }
     
     mutating func clear()  {
         firstArc.removeFromParent()
         secondArc.removeFromParent()
         circle.removeFromParent()
+        map.clear()
     }
     
     private mutating func setupCircle() {
@@ -191,12 +194,12 @@ struct Figure {
     
     private mutating func checkPortal() {
         if firstArc.position.x == paths.roundToChangeValue(paths.perWidth(7.5 + 21.25 * 2)) {
-            if firstArc.position.y == gameScene.size.height {
+            if firstArc.position.y >= gameScene.size.height {
                 firstArc.position.y = CGFloat(changeValue)
                 secondArc.position.y = CGFloat(changeValue)
                 pos = firstArc.position
                 direction = .up
-            } else if firstArc.position.y == 0 {
+            } else if firstArc.position.y <= paths.roundToChangeValue(0) {
                 firstArc.position.y = gameScene.size.height - CGFloat(changeValue)
                 secondArc.position.y = gameScene.size.height - CGFloat(changeValue)
                 pos = firstArc.position

@@ -16,7 +16,7 @@ struct Points {
     }
     
     
-    mutating func update(figurePos: CGPoint) -> Int {
+    mutating func update(figurePos: CGPoint) -> (Int, Bool) {
         checkBeeingEaten(figurePos: figurePos)
         var pointNumRe = 0
         for point in points {
@@ -24,9 +24,22 @@ struct Points {
                 pointNumRe += 1
             }
         }
-        return pointNumRe
+        let allEaten = checkAllEaten()
+        return (pointNumRe, allEaten)
     }
     
+    private func checkAllEaten() -> Bool {
+        var once = false
+        for point in points {
+            if point.position.x > 0 {
+                once = true
+                return false
+            }
+        }
+        if !once {
+            return true
+        }
+    }
     private mutating func checkBeeingEaten(figurePos: CGPoint) {
         let radiusF = CGFloat(pacManRadius - 2)
         for (index, point) in points.enumerated() {
@@ -76,6 +89,7 @@ struct Points {
                 circle.fillColor = SKColor(red: 179 / 255, green: 128 / 255, blue: 0, alpha: 1.0)
                 circle.position = CGPoint(x: posX, y: posY)
                 circle.strokeColor = .clear
+                circle.zPosition = 0.5
                 points.append(circle)
                 gameScene.addChild(points.last!)
             }
@@ -89,6 +103,7 @@ struct Points {
                 circle.fillColor = SKColor(red: 179 / 255, green: 128 / 255, blue: 0, alpha: 1.0)
                 circle.position = CGPoint(x: posX, y: posY)
                 circle.strokeColor = .clear
+                circle.zPosition = 0.5
                 points.append(circle)
                 gameScene.addChild(points.last!)
             }

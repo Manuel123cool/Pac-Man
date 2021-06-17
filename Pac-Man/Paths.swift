@@ -54,7 +54,8 @@ struct Paths {
     var startPostion = CGPoint(x: -1, y: -1)
     let changeValue: Double
     var deltedPaths: [Path] = []
-
+    var offsetValue: CGFloat = 15.0
+    
     init(gameScene: SKScene, changeValue: Double) {
         self.gameScene = gameScene
         self.changeValue = changeValue
@@ -81,6 +82,7 @@ struct Paths {
     
     init(gameScene: SKScene, changeValue: Double, forMonsters: Bool) {
         self.init(gameScene: gameScene, changeValue: changeValue)
+        
         let halfX: CGFloat = 21.25 / 2
         let halfY: CGFloat = 10.625 / 2
         
@@ -99,7 +101,8 @@ struct Paths {
     
     init(gameScene: SKScene, changeValue: Double, forPoints: Bool) {
         self.init(gameScene: gameScene, changeValue: changeValue)
-        
+        offsetValue = 10.0
+
         deletPath(index: 36, vertical: false)
         deletPath(index: 37, vertical: false)
     }
@@ -169,7 +172,6 @@ struct Paths {
     }
     
     func inRange(_ firstValue: CGFloat, _ secondValue: CGFloat) -> Bool {
-        let offsetValue: CGFloat = 10
         if firstValue >= secondValue - offsetValue &&
             firstValue <= secondValue + offsetValue {
             return true

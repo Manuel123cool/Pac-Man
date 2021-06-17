@@ -23,9 +23,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         figure!.move(figure!.direction)
-        monsters!.moveMonsters()
-        gameLogic!.update(figurePos: figure!.pos, monsterPositons: monsters!.rePositions(), points: &points!)
-        if gameLogic!.checkLost() {
+        monsters!.moveMonsters(gameLogic!.killerPointStatus.killerMode)
+        gameLogic!.update(figurePos: figure!.pos, points: &points!, monsters: &monsters!)
+        if gameLogic!.checkLostOrWon() {
             initFunc(true)
         }
     }
@@ -56,13 +56,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func initFunc(_ clear: Bool = false)  {
+        let changeValue: Double
         if clear {
             figure!.clear()
             monsters!.clear()
             points!.clear()
+            changeValue = gameLogic!.changeValue
+        } else {
+            changeValue = 1.0
         }
-        figure = Figure(gameScene: self as SKScene)
-        monsters = Monsters(gameScene: self as SKScene, pacManRadius: figure!.pacManRadius)
+        figure = Figure(gameScene: self as SKScene, changeValue: changeValue)
+        monsters = Monsters(gameScene: self as SKScene,
+            pacManRadius: figure!.pacManRadius, changeValue: changeValue)
         points = Points(gameScene: self as SKScene, changeValue: figure!.changeValue, pacManRadius: figure!.pacManRadius)
     }
 }
