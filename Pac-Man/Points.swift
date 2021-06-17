@@ -7,6 +7,7 @@ struct Points {
     var points: [SKShapeNode] = []
     let pacManRadius: Double
     let pointRadius: CGFloat = 2
+    var eaten = 0
     init(gameScene: SKScene, changeValue: Double, pacManRadius: Double) {
         self.gameScene = gameScene
         self.paths = Paths(gameScene: gameScene, changeValue: changeValue, forPoints: true)
@@ -17,15 +18,17 @@ struct Points {
     
     
     mutating func update(figurePos: CGPoint) -> (Int, Bool) {
+        let wasEaten = eaten
         checkBeeingEaten(figurePos: figurePos)
-        var pointNumRe = 0
+        var pointNum = 0
         for point in points {
             if point.position.x == -1 {
-                pointNumRe += 1
+                pointNum += 1
             }
         }
+        eaten = pointNum
         let allEaten = checkAllEaten()
-        return (pointNumRe, allEaten)
+        return (pointNum - wasEaten, allEaten)
     }
     
     private func checkAllEaten() -> Bool {
@@ -40,6 +43,7 @@ struct Points {
             return true
         }
     }
+    
     private mutating func checkBeeingEaten(figurePos: CGPoint) {
         let radiusF = CGFloat(pacManRadius)
         for (index, point) in points.enumerated() {

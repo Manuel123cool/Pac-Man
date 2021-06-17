@@ -29,7 +29,7 @@ struct GameLogic {
         let monsterPositons = monsters.rePositions()
         let pointsUpdateResult = points.update(figurePos: figurePos)
         pointsNum += pointsUpdateResult.0
-        pointsFromCurrentLevel = pointsUpdateResult.0
+        pointsFromCurrentLevel += pointsUpdateResult.0
         if pointsUpdateResult.1 {
             hasWon()
             return
