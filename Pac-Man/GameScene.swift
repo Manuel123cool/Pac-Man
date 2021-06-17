@@ -23,7 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         figure!.move(figure!.direction)
-        monsters!.moveMonsters(gameLogic!.killerPointStatus.killerMode)
+        monsters!.moveMonsters(figurePos: figure!.pos, gameLogic!.killerPointStatus.killerMode)
         gameLogic!.update(figurePos: figure!.pos, points: &points!, monsters: &monsters!)
         if gameLogic!.checkLostOrWon() {
             initFunc(true)

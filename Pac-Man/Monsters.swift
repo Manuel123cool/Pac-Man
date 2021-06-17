@@ -131,26 +131,8 @@ struct Monsters {
             guard monster.pos != oldPos else {
                 continue
             }
-            var x1: CGFloat = monster.pos.x
-            var x2: CGFloat = newPos.x
-            
-            var y1: CGFloat = monster.pos.y
-            var y2: CGFloat = newPos.y
-            
-            if monster.pos.x > newPos.x {
-                x1 = newPos.x
-                x2 = monster.pos.x
-            }
-            x2 -= x1
-            
-            if monster.pos.y > newPos.y {
-                y1 = newPos.y
-                y2 = monster.pos.y
-            }
-            y2 -= y1
-            
-            let betweenPoins = (pow(x2, 2) + pow(y2, 2)).squareRoot()
-            if betweenPoins - radiusF * 2 < 0 {
+    
+            if Monsters.distanceBetween(point1: newPos, point2: monster.pos) - radiusF * 2 < 0 {
                 return true
             }
         }
@@ -207,7 +189,7 @@ struct Monsters {
         }
     }
     
-    mutating func moveMonster(_ index: Int) {
+    mutating func moveMonster(_ index: Int, figurePos: CGPoint) {
         let  currentPos = monsters[index].pos
         var possibleMoves: [(CGPoint, Direction)] = []
         
@@ -232,23 +214,36 @@ struct Monsters {
         deleteOppositeIfPossible(possibleMoves: &possibleMoves, index: index)
         
         checkDirInSpawn(possibleMoves: &possibleMoves, index: index)
-        
+
         if possibleMoves.isEmpty {
             monsters[index].changeToOppositeDir()
             return
         }
         
-        let randomIndex = Int.random(in: 0..<possibleMoves.count)
+        let nearestIndex = reNearestToPlayer(possibleMoves: possibleMoves, figurePos: figurePos)
+        let nextMove = possibleMoves[nearestIndex]
         
-        guard checkInSpawn(pos: possibleMoves[randomIndex].0, index: index) else {
+        guard checkInSpawn(pos: nextMove.0, index: index) else {
             monsters[index].changeToOppositeDir()
             return
         }
         
-        monsters[index].moveTo(possibleMoves[randomIndex].0)
-        monsters[index].changeDir(possibleMoves[randomIndex].1)
+        monsters[index].moveTo(nextMove.0)
+        monsters[index].changeDir(nextMove.1)
         
         return
+    }
+    
+    func reNearestToPlayer(possibleMoves: [(CGPoint, Direction)], figurePos: CGPoint) -> Int {
+        var nearest: (CGFloat, Int) = (gameScene.size.height * 10, 0)
+        for (index, possibleMove) in possibleMoves.enumerated() {
+            let distance = Monsters.distanceBetween(point1: possibleMove.0, point2: figurePos)
+            if distance < nearest.0 {
+                nearest.0 = distance
+                nearest.1 = index
+            }
+        }
+        return nearest.1
     }
     
     func deleteOppositeIfPossible(possibleMoves: inout [(CGPoint, Direction)], index: Int) {
@@ -296,12 +291,14 @@ struct Monsters {
                     minusIndex += 1
                 }
             }
+            return
         }
+        return
     }
     
-    mutating func moveMonsters(_ makeMonsterBlue: Bool = false) {
+    mutating func moveMonsters(figurePos: CGPoint,_ makeMonsterBlue: Bool = false) {
         for (index, _) in monsters.enumerated() {
-            moveMonster(index)
+            moveMonster(index, figurePos: figurePos)
             
             if makeMonsterBlue {
                 monsters[index].monster.fillColor = .blue
@@ -309,6 +306,29 @@ struct Monsters {
                 monsters[index].monster.fillColor = monsters[index].color
             }
         }
+    }
+    
+    static func distanceBetween(point1: CGPoint, point2: CGPoint) -> CGFloat {
+        
+        var smallerX: CGFloat = point1.x
+        var biggerX: CGFloat = point2.x
+        
+        var smallerY: CGFloat = point1.y
+        var biggerY: CGFloat = point2.y
+        
+        if point1.x > point2.x {
+            smallerX = point2.x
+            biggerX = point1.x
+        }
+        biggerX -= smallerX
+        
+        if point1.y > point2.y {
+            smallerY = point2.y
+            biggerY = point1.y
+        }
+        biggerY -= smallerY
+        
+        return (pow(biggerX, 2) + pow(biggerY, 2)).squareRoot()
     }
     
     func rePositions() -> [CGPoint] {
@@ -402,8 +422,8 @@ struct MonsterSpawn {
         spawns.append(CGPoint(x: perWidth((7.5 + 21.25 * CGFloat(2)) + (21.25 / CGFloat(2))), y: perHeigth(7.5 + 10.625 * 3 + 10.625 / 2)))
         
         spawnLoop: for spawn in spawns {
-            for monster in monsters {
-                if monster.pos == spawn {
+            for monsterLoop in monsters {
+                if Monsters.distanceBetween(point1: monsterLoop.pos, point2: spawn) - CGFloat(pacManRadius) * 2 < 0 {
                     continue spawnLoop
                 }
             }

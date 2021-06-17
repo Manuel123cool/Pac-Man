@@ -53,33 +53,15 @@ struct GameLogic {
         won = true
     }
     
-    mutating func checkBeeingEaten(figurePos: CGPoint, monsterPositons: [CGPoint], killerPoint: Bool = false) -> (Bool, Int) {
+    func checkBeeingEaten(figurePos: CGPoint, monsterPositons: [CGPoint], killerPoint: Bool = false) -> (Bool, Int) {
         let radius1 = CGFloat(radius)
+        var radius2 = radius1
+        if killerPoint {
+            radius2 = 5
+        }
+        
         for (index, monsterPos) in monsterPositons.enumerated() {
-            var x1: CGFloat = monsterPos.x
-            var x2: CGFloat = figurePos.x
-            
-            var y1: CGFloat = monsterPos.y
-            var y2: CGFloat = figurePos.y
-            if monsterPos.x > figurePos.x {
-                x1 = figurePos.x
-                x2 = monsterPos.x
-            }
-            x2 -= x1
-            
-            if monsterPos.y > figurePos.y {
-                y1 = figurePos.y
-                y2 = monsterPos.y
-            }
-            y2 -= y1
-            
-            var radius2 = radius1
-            if killerPoint {
-                radius2 = CGFloat(5)
-            }
-            
-            let betweenPoins = (pow(x2, 2) + pow(y2, 2)).squareRoot()
-            if betweenPoins - (radius1 + radius2) < 0 {
+            if Monsters.distanceBetween(point1: monsterPos, point2: figurePos) - (radius1 + radius2) < 0 {
                 return (true, index)
             }
         }
@@ -139,8 +121,9 @@ struct GameLogic {
     
     mutating func drawKillerPoints() {
         if !killerPointNodes.isEmpty {
-            for (index, _) in killerPointNodes.enumerated() {
-                killerPointNodes[index].removeFromParent()
+            for _ in killerPointNodes {
+                killerPointNodes[0].removeFromParent()
+                killerPointNodes.remove(at: 0)
             }
         }
         drawKillerPoint(pos: CGPoint(x: perWidth(7.5), y: perHeigth(7.5)))

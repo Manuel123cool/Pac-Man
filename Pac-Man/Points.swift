@@ -41,33 +41,14 @@ struct Points {
         }
     }
     private mutating func checkBeeingEaten(figurePos: CGPoint) {
-        let radiusF = CGFloat(pacManRadius - 2)
+        let radiusF = CGFloat(pacManRadius)
         for (index, point) in points.enumerated() {
-            let pointPos = point.position
             if point.position.x == -1 {
                 continue
             }
             
-            if paths.inRange(pointPos.y, figurePos.y){
-                if figurePos.x < pointPos.x {
-                    if figurePos.x + radiusF > pointPos.x - pointRadius {
-                        points[index].position = CGPoint(x: -1, y: -1)
-                    }
-                } else {
-                    if figurePos.x - radiusF < pointPos.x + pointRadius {
-                        points[index].position = CGPoint(x: -1, y: -1)
-                    }
-                }
-            } else if paths.inRange(pointPos.x, figurePos.x) {
-                if figurePos.y < pointPos.y {
-                    if figurePos.y + radiusF > pointPos.y - pointRadius {
-                        points[index].position = CGPoint(x: -1, y: -1)
-                    }
-                } else {
-                    if figurePos.y - radiusF < pointPos.y + pointRadius {
-                        points[index].position = CGPoint(x: -1, y: -1)
-                    }
-                }
+            if Monsters.distanceBetween(point1: point.position, point2: figurePos) - (radiusF + pointRadius) < 0 {
+                points[index].position = CGPoint(x: -1, y: -1)
             }
         }
     }
