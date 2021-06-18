@@ -32,6 +32,7 @@ struct GameLogic {
         pointsNum += pointsUpdateResult.0
         pointsInCurrentLive += pointsUpdateResult.0
         if pointsUpdateResult.1 {
+            points.eaten = 0
             hasWon()
             return
         }
@@ -189,6 +190,7 @@ struct GameLogic {
             printLives()
             return true
         } else if won {
+            pointsInCurrentLive = 0
             won = false
             lives = 2
             printLives()
