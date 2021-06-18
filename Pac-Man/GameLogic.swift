@@ -8,7 +8,8 @@ struct GameLogic {
     var lost = false
     var won = false
     var pointsNum = 0
-    var pointsFromCurrentLevel = 0
+    var pointsInCurrentLive = 0
+    
     var pointsLabel = SKLabelNode()
     var levelLabel = SKLabelNode()
     var livesLabel = SKLabelNode()
@@ -29,7 +30,7 @@ struct GameLogic {
         let monsterPositons = monsters.rePositions()
         let pointsUpdateResult = points.update(figurePos: figurePos)
         pointsNum += pointsUpdateResult.0
-        pointsFromCurrentLevel += pointsUpdateResult.0
+        pointsInCurrentLive += pointsUpdateResult.0
         if pointsUpdateResult.1 {
             hasWon()
             return
@@ -40,9 +41,11 @@ struct GameLogic {
         let isEaten = checkBeeingEaten(figurePos: figurePos, monsterPositons: monsterPositons)
         if isEaten.0 && !killerPointStatus.killerMode {
             loosesLive()
+            points.eaten = 0
         } else if isEaten.0 {
             monsters.moveToSpawn(index: isEaten.1)
             pointsNum += 20
+            pointsInCurrentLive += 20
         }
     }
     
@@ -108,9 +111,10 @@ struct GameLogic {
     }
     
     mutating func loosesLive() {
+        pointsNum -= pointsInCurrentLive
+        pointsInCurrentLive = 0
         lives -= 1
         lostLive = true
-        pointsFromCurrentLevel = 0
         printLives()
         drawKillerPoints()
         if lives == 0 {
@@ -187,11 +191,9 @@ struct GameLogic {
         } else if won {
             won = false
             lives = 2
-            pointsFromCurrentLevel = 0
             printLives()
             return true
         } else if lostLive {
-            pointsNum -= pointsFromCurrentLevel
             lostLive = false
             return true
         }

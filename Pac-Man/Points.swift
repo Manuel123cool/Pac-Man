@@ -16,7 +16,6 @@ struct Points {
         draw()
     }
     
-    
     mutating func update(figurePos: CGPoint) -> (Int, Bool) {
         let wasEaten = eaten
         checkBeeingEaten(figurePos: figurePos)
@@ -26,7 +25,9 @@ struct Points {
                 pointNum += 1
             }
         }
+        
         eaten = pointNum
+        
         let allEaten = checkAllEaten()
         return (pointNum - wasEaten, allEaten)
     }
